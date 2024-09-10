@@ -1,2 +1,0 @@
-core01
-turret01
