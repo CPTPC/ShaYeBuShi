@@ -1,2 +1,2 @@
-# ShaYeBuShi
-A Mindustry Java mod that only works on PC.
+# Mindustry ShaYeBuShiMod
+A Java Mindustry mod that only works on PC.
