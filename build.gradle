@@ -3,7 +3,7 @@ apply plugin: "java"
 version '1.0'
 
 targetCompatibility = 8
-sourceCompatibility = JavaVersion.VERSION_16
+sourceCompatibility = JavaVersion.VERSION_17
 
 sourceSets.main.java.srcDirs = ["src"]
 
@@ -30,7 +30,7 @@ dependencies{
     compileOnly "com.github.Anuken.Arc:arc-core:$mindustryVersion"
     compileOnly "com.github.Anuken.Arc:arc-core:v145.1"
     //compileOnly "com.github.Anuken.Mindustry:core:$mindustryVersion"
-    //compileOnly "com.github.Anuken.Mindustry:core:v136"
+    compileOnly "com.github.Anuken.Mindustry:core:v146"
     annotationProcessor "com.github.Anuken:jabel:$jabelVersion"
 }
 
