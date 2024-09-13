@@ -1,6 +1,6 @@
 name: Build mod jar
 
-on: [pull_request]
+on: [push]
 
 jobs:
   buildJar:
