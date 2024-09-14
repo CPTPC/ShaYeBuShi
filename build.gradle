@@ -106,30 +106,6 @@ tasks.register('copyTo', Copy) {
     rename { 'shayebushi.jar' }
 }
 
-tasks.register('debugMobile', JavaExec) {
-    dependsOn classes
-    dependsOn 'copyTo'
-
-    main = "-jar"
-    args = [
-            "E:/MindustryModDevLib/Mindustry7.0.jar",
-            "-debug",
-            "-testMobile"
-    ]
-}
-
-tasks.register('debugDesktop', JavaExec) {
-    dependsOn classes
-    dependsOn 'copyTo'
-
-    main = "-jar"
-    args = [
-            "E:/MindustryModDevLib/Mindustry7.0.jar",
-            "-debug",
-    ]
-
-}
-
 tasks.register('deploy', Jar) {
     dependsOn jarAndroid
     dependsOn jar
