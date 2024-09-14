@@ -7,7 +7,7 @@ import shayebushi.entities.units.JieTic;
 
 import static mindustry.Vars.state;
 import static mindustry.Vars.tilesize;
-import static mindustry.content.StatusEffects.fast;
+//import static mindustry.content.StatusEffects.fast;
 import static shayebushi.SYBSStatusEffects.fastttt;
 
 public class JieTiAI extends AIController {
