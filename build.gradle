@@ -95,17 +95,6 @@ jar{
     }
 }
 
-//paths are hardcoded
-tasks.register('copyTo', Copy) {
-    from jar
-    into 'E:/Steam/steamapps/common/Mindustry/saves/mods'
-    rename { 'shayebushi.jar' }
-
-    from jar
-    into appDataRoaming
-    rename { 'shayebushi.jar' }
-}
-
 tasks.register('deploy', Jar) {
     dependsOn jarAndroid
     dependsOn jar
