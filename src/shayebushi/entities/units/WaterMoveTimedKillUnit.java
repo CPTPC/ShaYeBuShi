@@ -567,36 +567,7 @@ public class WaterMoveTimedKillUnit extends UnitWaterMove implements WaterMovec,
     }
 
     public double sense(LAccess sensor) {
-
-        return switch (sensor) {
-            case totalItems ->stack().amount;
-            case itemCapacity ->type.itemCapacity;
-            case rotation ->rotation;
-            case health ->health;
-            case shield ->shield;
-            case maxHealth ->maxHealth;
-            case ammo ->!state.rules.unitAmmo ? type.ammoCapacity : ammo;
-            case ammoCapacity ->type.ammoCapacity;
-            case x ->World.conv(x);
-            case y ->World.conv(y);
-            case dead ->dead || !isAdded() ? 1 : 0;
-            case team ->team.id;
-            case shooting ->isShooting() ? 1 : 0;
-            case boosting ->type.canBoost && isFlying() ? 1 : 0;
-            case range ->range() / tilesize;
-            case shootX ->World.conv(aimX());
-            case shootY ->World.conv(aimY());
-            case mining ->mining() ? 1 : 0;
-            case mineX ->mining() ? mineTile.x : -1;
-            case mineY ->mining() ? mineTile.y : -1;
-            case flag ->flag;
-            case speed ->type.speed * 60.0F / tilesize;
-            case controlled ->!isValid() ? 0 : controller instanceof LogicAI ? ctrlProcessor : controller instanceof Player ? ctrlPlayer : controller instanceof CommandAI command && command.hasCommand() ? ctrlCommand : 0;
-            case payloadCount ->((Object)this) instanceof Payloadc pay ? pay.payloads().size : 0;
-            case size ->hitSize / tilesize;
-            case color ->Color.toDoubleBits(team.color.r, team.color.g, team.color.b, 1.0F);
-            default ->Float.NaN;
-        };
+        return super.sense(sensor) ;
     }
 
     public float ammof() {
