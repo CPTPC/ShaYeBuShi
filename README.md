@@ -1,4 +1,4 @@
 ![sybs.png](assets/sprites-override/ui/sybs.png)
 ![icon.png](icon.png)
 # Mindustry ShaYeBuShi Mod
-A Java Mindustry mod that only works on PC.
+A Java Mindustry mod that works on PC and Android.
