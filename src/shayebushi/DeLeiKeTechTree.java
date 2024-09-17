@@ -273,7 +273,9 @@ public class DeLeiKeTechTree{
                                 node(liusuanzhaoze,Seq.with(new SectorComplete(fushekuangshan), new Research(SYBSItems.fangfushe), new Research(fangfushelichang)), () -> {
                                     node(liebianfeiqu,Seq.with(new SectorComplete(fushekuangshan), new Research(SYBSItems.fangfushe), new Research(fangfushelichang)), () -> {
                                         node(rongyantongdao,Seq.with(new SectorComplete(fushekuangshan), new SectorComplete(liusuanzhaoze), new SectorComplete(liebianfeiqu), new Research(SYBSItems.fangfushe), new Research(fangfushelichang), new Research(SYBSItems.hashihejin), new Research(fangfushibeng), new Research(SYBSItems.hefeiliao)), () -> {
+                                            node(qinggongyequ,Seq.with(new SectorComplete(rongyantongdao), new Research(xielei), new Research(zhuoshao)), () -> {
 
+                                            });
                                         });
                                     });
                                 });
