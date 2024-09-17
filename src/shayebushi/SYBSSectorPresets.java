@@ -57,6 +57,9 @@ public class SYBSSectorPresets {
            difficulty = 6 ;
            //alwaysFushe = true ;
         }};
+        qinggongyequ = new SYBSSectorPreset("qinggongyequ", SYBSPlanets.deleike, 0) {{
+            difficulty = 7 ;
+        }};
         rongyantongdao = new SYBSSectorPreset("rongyantongdao", SYBSPlanets.deleike, 68) {{
             captureWave = 300 ;
             difficulty = 8 ;
