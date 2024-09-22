@@ -13,7 +13,7 @@ import mindustry.gen.Unit;
 import mindustry.type.UnitType;
 import mindustry.type.Weapon;
 
-public class TouBuUnit extends XianShangUnitEntity {
+public class TouBuUnit extends QiangZhiXianShangUnitEntity {
     public Seq<Unit> jietis = new Seq<>() ;
     public Seq<Integer> jietiIds = new Seq<>() ;
     public UnitType jietiType ;
