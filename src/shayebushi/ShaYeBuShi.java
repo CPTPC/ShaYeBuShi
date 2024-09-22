@@ -2011,6 +2011,15 @@ public class ShaYeBuShi extends Mod implements SaveFileReader.CustomChunk {
     public static Vec2 rotate(float sourceX, float sourceY, float angle, float posX, float posY) {
         return rotate(new Vec2(sourceX, sourceY), angle, posX, posY) ;
     }
+    public static T Seq<T> filter(Seq<T> source, Boolf<T> check) {
+        Seq<T> out =  new Seq<>() ;
+        for (T t : source) {
+            if (check.get(t)) {
+                out.add(t) ;
+            }
+        }
+        return out ;
+    }
 
 
     public static class SideBar extends Element {
