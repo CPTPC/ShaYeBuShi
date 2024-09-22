@@ -191,7 +191,8 @@ public class SYBSUnitTypes {
 //            for (StatusEffect ss : statuses){
 //                System.out.println(ss.localizedName);
 //            }
-            statuses.filter(ShaYeBuShi::isJianYi);
+            //statuses.filter(ShaYeBuShi::isJianYi);
+            statuses = ShaYeBuShi.filter(statuses, ShaYeBuShi::isJianYi) ;
             statuses.add(StatusEffects.wet);
         }
         if (!isyange) {
