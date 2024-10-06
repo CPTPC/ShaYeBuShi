@@ -19,7 +19,7 @@ public interface Linkc extends Unitc, Entityc {
     default void updateLink() {
         if (mounts().length > 0) {
             WeaponMount wm = mounts()[0];
-            if (link() != null && wm.shoot) {
+            if (link() != null && isShooting()) {
                 for (WeaponMount m : link().mounts) {
                     m.shoot = true;
                     m.aimX = aimX();

@@ -35,7 +35,7 @@ import static mindustry.Vars.*;
 public class QiangZhiXianShangUnitEntity extends XianShangUnitEntity {
     public float shangzhen = maxHealth;
     public UnitType lastType = type ;
-    public Team lastTeam = team ;
+    //public Team lastTeam = team ;
     @Override
     public int classId() {
         return 120;
@@ -55,16 +55,16 @@ public class QiangZhiXianShangUnitEntity extends XianShangUnitEntity {
                 dead = false;
                 //drag = type.drag ;
             }
-            team = lastTeam ;
+            added = (health > 0 || !damageable()) ;
+            //team = lastTeam ;
         }
         else {
-            lastTeam = team ;
+            //lastTeam = team ;
             lastType = type ;
         }
         if (shangzhen > health){
             float f = shangzhen - health ;
-            dangqianshanghaimiao += f ;
-            dangqianshanghaifen += f ;
+            //System.out.println(f);
             /*
             if (dangqianshanghaifen > fenxianshang) {
                 health = shangzhen + dangqianshanghaifen - fenxianshang ;
@@ -78,9 +78,21 @@ public class QiangZhiXianShangUnitEntity extends XianShangUnitEntity {
             */
             if (f > dancixianshang) {
                 health += f - dancixianshang ;
+                dangqianshanghaimiao += dancixianshang ;
+                dangqianshanghaifen += dancixianshang ;
             }
-            if (dangqianshanghaimiao > miaoxianshang || dangqianshanghaifen > fenxianshang) {
-                health += f ;
+            else {
+                dangqianshanghaimiao += f ;
+                dangqianshanghaifen += f ;
+            }
+            if (dangqianshanghaimiao > miaoxianshang) {
+                //System.out.println(dangqianshanghaimiao + "d");
+                //System.out.println(health + "b");
+                health += f - (dangqianshanghaimiao == f ? miaoxianshang : 0) ;
+                //System.out.println(health + "a");
+            }
+            if (dangqianshanghaimiao > fenxianshang) {
+                health += f - (dangqianshanghaifen == f ? fenxianshang : 0) ;
             }
         }
         i += Time.delta ;
@@ -109,6 +121,9 @@ public class QiangZhiXianShangUnitEntity extends XianShangUnitEntity {
 //        }
         //System.out.println(health + " " + shangzhen);
         //System.out.println(lastTeam.name + " " + team.name);
+//        if (!(this instanceof JieTiUnit)) {
+//            System.out.println(shangzhen + " " + health + " 2");
+//        }
         shangzhen = health ;
         super.update();
         if (dead && (health > 0 || !damageable())) {
@@ -133,8 +148,8 @@ public class QiangZhiXianShangUnitEntity extends XianShangUnitEntity {
             hitTime = 1.0F;
             a -= shieldDamage;
             a = Math.min(a, dancixianshang);
-            dangqianshanghaimiao += a;
-            dangqianshanghaifen += a;
+            //dangqianshanghaimiao += a;
+            //dangqianshanghaifen += a;
             if (a > 0 && type.killable) {
                 health -= a;
                 if (health <= 0 && !dead) {
@@ -170,14 +185,21 @@ public class QiangZhiXianShangUnitEntity extends XianShangUnitEntity {
     }
     @Override
     public void destroy(){
+//        if (this instanceof JieTiUnit) {
+//            System.out.println(health + " " + shangzhen + " " + dangqianshanghaimiao) ;
+//            System.out.println(miaoxianshang + " " + dancixianshang) ;
+//        }
         if (damageable() && health <= 0) {
             super.destroy();
+            //System.out.println(6) ;
         }
     }
     @Override
     public void remove() {
+        //System.out.println(damageable() && health <= 0) ;
         if ((damageable() && health <= 0)) {
             super.remove();
+            //System.out.println(7) ;
         }
     }
     @Override

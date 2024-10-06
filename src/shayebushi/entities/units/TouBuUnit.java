@@ -85,7 +85,7 @@ public class TouBuUnit extends QiangZhiXianShangUnitEntity {
                         u.team(team) ;
                     }
                     for (WeaponMount w : u.mounts) {
-                        if (mounts().length > 0 && mounts[0].shoot) {
+                        if (isShooting) {
                             if (target != null) {
                                 w.target = target;
                             }
@@ -117,6 +117,17 @@ public class TouBuUnit extends QiangZhiXianShangUnitEntity {
             u.x = x ;
             u.y = y ;
             u.add();
+        }
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy() ;
+        for (Unit u : jietis) {
+            if (damageable() && health <= 0 && u instanceof JieTiUnit j) {
+                j.setHealth(0) ;
+            }
+            u.kill() ;
         }
     }
 

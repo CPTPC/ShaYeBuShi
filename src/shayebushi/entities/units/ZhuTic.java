@@ -39,7 +39,7 @@ public interface ZhuTic extends Unitc, Entityc {
                         pucongs().remove(u) ;
                     }
                     for (WeaponMount w : u.mounts) {
-                        if (mounts().length > 0 && mounts()[0].shoot) {
+                        if (isShooting()) {
                             if (target != null) {
                                 w.target = target;
                             }

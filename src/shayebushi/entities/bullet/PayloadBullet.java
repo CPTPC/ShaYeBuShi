@@ -88,8 +88,8 @@ public class PayloadBullet extends BasicBulletType {
         Draw.reset();
     }
     @Override
-    public void hit(Bullet b) {
-        super.hit(b) ;
+    public void removed(Bullet b) {
+        super.removed(b); ;
         if (b.data instanceof BuildPayload bp) {
             bp.build.kill() ;
         }

@@ -9,10 +9,10 @@ public class FanTanBullet extends LaserBoltBulletType {
         pierce = true ;
     }
     @Override
-    public void hit(Bullet b){
+    public void handlePierce(Bullet b, float initialHealth, float x, float y){
         int r = (int) b.rotation() ;
         switch (r) {
-            case 90, 180, 270, 0, 360 :
+            case 0, 180, 360 :
                 b.rotation(b.rotation() + 180) ;
                 break ;
             default :

@@ -31,7 +31,7 @@ public class ZhuTiAbility extends Ability {
         if (unit instanceof ZhuTic z && buquan) {
             for (UnitType u : spawnTypes) {
                 for (int i = z.pucongs().size; i < (spawnTypes.size == 1 ? z.pucongweiAmount() : z.pucongs().size + 1); i++) {
-                    if (i >= z.pucongweiAmount()) break;
+                    if (i >= z.pucongweiAmount() || i >= z.pucongweis().size) break;
                     Unit un = u.create(unit.team);
                     un.x = unit.x;
                     un.y = unit.y;

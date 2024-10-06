@@ -1,14 +1,21 @@
 package shayebushi.entities.units;
 
+import arc.struct.Seq;
 import arc.util.Time;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
+import mindustry.ai.types.CommandAI;
 import mindustry.content.Fx;
+import mindustry.entities.units.AIController;
+import mindustry.entities.units.UnitController;
+import mindustry.entities.units.WeaponMount;
 import mindustry.game.Team;
 import mindustry.gen.Unit;
 import mindustry.gen.UnitEntity;
 import mindustry.graphics.Drawf;
 import mindustry.world.draw.DrawDefault;
+
+import static mindustry.Vars.*;
 
 public class XianShangUnitEntity extends UnitEntity {
     public float miaoxianshang = 28000 ;
@@ -20,21 +27,39 @@ public class XianShangUnitEntity extends UnitEntity {
     public float dangqianshanghaifen = 0 ;
     public Team lastTeam = team ;
     public int timer = 0 ;
+    public float lastRotation, lx, ly ;
+    public Seq<Float> lastReloads = new Seq<>() ;
+    public boolean wasPlayer ;
 //    public float shangzhen = maxHealth;
     @Override
     public int classId() {
-    return 113;
-}
+        return 113;
+    }
     @Override
     public void update(){
         health = Math.min(health, maxHealth) ;
-        if (timer >= 600) {
+        if (timer >= 2) {
             if (lastTeam != team) {
                 team = lastTeam;
             }
         }
         else {
             lastTeam = team ;
+        }
+        fix();
+        int iz = 0 ;
+        for (WeaponMount wm : mounts) {
+            if (lastReloads.size < mounts.length) {
+                lastReloads.add(wm.reload) ;
+            }
+            if (Float.isNaN(wm.reload)) {
+                wm.reload = lastReloads.get(iz) ;
+            }
+            if (wm.reload == lastReloads.get(iz)) {
+                wm.weapon.update(this, wm) ;
+            }
+            lastReloads.set(iz, wm.reload) ;
+            iz ++ ;
         }
         timer ++ ;
 //        if (shangzhen > health){
@@ -97,8 +122,51 @@ public class XianShangUnitEntity extends UnitEntity {
     }
     @Override
     public void draw(){
+        fix();
         super.draw();
         //Drawf.circles(this.x,this.y,this.hitSize * 1.15f,this.team.color);
+    }
+    public void fix() {
+        if (Float.isNaN(rotation)) {
+            rotation = lastRotation ;
+        }
+        if (Float.isNaN(vel.x) || Float.isNaN(vel.y)) {
+            vel.set(0, 0) ;
+        }
+        if (x < 0 || y < 0 || x > world.width() * tilesize || y > world.height() * tilesize || Float.isNaN(x) || Float.isNaN(y)) {
+            set(lx, ly) ;
+            if (controller instanceof AIController a) {
+                if (a instanceof CommandAI) {
+                    a.updateUnit() ;
+                }
+                else {
+                    a.updateMovement();
+                }
+                move(vel.x, vel.y) ;
+            }
+//            if (this instanceof QiangZhiXianShangUnitEntity && !(this instanceof JieTiUnit)) {
+//                System.out.println(vel.x + " " + vel.y);
+//            }
+        }
+        lastRotation = rotation ;
+        lx = x ;
+        ly = y ;
+//        if (this instanceof QiangZhiXianShangUnitEntity && !(this instanceof JieTiUnit)) {
+//            System.out.println(x + " " + y);
+//        }
+        if (controller == null) {
+            if (wasPlayer && false) {
+                player.unit(this) ;
+                controller = player ;
+            }
+            else {
+                controller = type.controller.get(this);
+            }
+        }
+        wasPlayer = isPlayer() ;
+//        if (this instanceof QiangZhiXianShangUnitEntity && !(this instanceof JieTiUnit)) {
+//            System.out.println(isCommandable() + " " + (controller == null));
+//        }
     }
     @Override
     public void read(Reads read){
