@@ -277,7 +277,7 @@ public class ZhenDangHuDunBlock extends AbilityBlock {
         @Override
         public double sense(LAccess sensor){
             if(sensor == LAccess.heat) return buildup;
-            if(sensor == LAccess.shield) return broken ? 0f : Math.max(shieldHealth + phaseShieldBoost * phaseHeat - buildup, 0);
+            //if(sensor == LAccess.shield) return broken ? 0f : Math.max(shieldHealth + phaseShieldBoost * phaseHeat - buildup, 0);
             return super.sense(sensor);
         }
 
