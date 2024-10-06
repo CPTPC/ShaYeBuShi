@@ -14,6 +14,7 @@ import mindustry.entities.EntityIndexer;
 import mindustry.gen.Drawc;
 import mindustry.gen.Entityc;
 import mindustry.gen.Hitboxc;
+import mindustry.gen.Unit;
 import shayebushi.ShaYeBuShi;
 import shayebushi.entities.units.JieTiUnit;
 import shayebushi.entities.units.QiangZhiXianShangUnitEntity;
@@ -36,6 +37,8 @@ public class SYBSEntityGroup<T extends Entityc> extends EntityGroup<T> {
     private boolean clearing;
 
     private int index;
+
+    public Seq<T> removed = new Seq<>() ;
 
     public static int nextId(){
         return lastId++;
@@ -91,7 +94,9 @@ public class SYBSEntityGroup<T extends Entityc> extends EntityGroup<T> {
 
     public void update(){
         for(index = 0; index < array.size; index++){
-            array.items[index].update();
+            if (!removed.contains(array.items[index])) {
+                array.items[index].update();
+            }
         }
     }
 
@@ -121,6 +126,7 @@ public class SYBSEntityGroup<T extends Entityc> extends EntityGroup<T> {
 
         for(index = 0; index < array.size; index++){
             Drawc draw = (Drawc)array.items[index];
+            if (removed.contains((T) draw)) continue ;
             try {
                 float clip = draw.clipSize();
                 if (viewport.overlaps(draw.x() - clip / 2f, draw.y() - clip / 2f, clip, clip)) {
@@ -148,10 +154,10 @@ public class SYBSEntityGroup<T extends Entityc> extends EntityGroup<T> {
     }
 
     public boolean canRemove(T type) {
-        if (type instanceof JieTiUnit j && j.si()) {
-            return true ;
-        }
-        return !(type instanceof QiangZhiXianShangUnitEntity q && (q.health >= 0 || !q.damageable()))  ;
+//        if (type instanceof JieTiUnit j && j.si()) {
+//            return true ;
+//        }
+        return !(type instanceof QiangZhiXianShangUnitEntity q && (q.health > 0 || !q.damageable()))  ;
     }
 
     public void removeByID(int id){
@@ -213,6 +219,7 @@ public class SYBSEntityGroup<T extends Entityc> extends EntityGroup<T> {
 
     public void add(T type){
         if(type == null) throw new RuntimeException("Cannot add a null entity!");
+        if (removed.contains(type)) return ;
         array.add(type);
 
         if(mappingEnabled()){
@@ -227,11 +234,13 @@ public class SYBSEntityGroup<T extends Entityc> extends EntityGroup<T> {
     }
 
     public void remove(T type){
+        //System.out.println(canRemove(type));
         if(clearing || !canRemove(type)) return;
         if(type == null) throw new RuntimeException("Cannot remove a null entity!");
         int idx = array.indexOf(type, true);
         if(idx != -1){
             array.remove(idx);
+            removed.add(type) ;
 
             //fix incorrect HEAD index since it was swapped
             if(array.size > 0 && idx != array.size){
@@ -248,6 +257,7 @@ public class SYBSEntityGroup<T extends Entityc> extends EntityGroup<T> {
                 index --;
             }
         }
+        //System.out.println("6");
     }
 
     public void removeIndex(T type, int position){
