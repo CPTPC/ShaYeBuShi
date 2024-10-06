@@ -2,6 +2,7 @@ package shayebushi;
 
 import arc.*;
 import arc.files.Fi;
+import arc.files.ZipFi;
 import arc.func.*;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
@@ -63,6 +64,7 @@ import mindustry.ui.Bar;
 import mindustry.ui.IntFormat;
 import mindustry.ui.Styles;
 import mindustry.ui.dialogs.*;
+import mindustry.ui.fragments.MenuFragment;
 import mindustry.world.Block;
 import mindustry.world.Tile;
 import mindustry.world.blocks.defense.turrets.*;
@@ -83,6 +85,7 @@ import shayebushi.entities.bullet.TeShuExplosionBulletType;
 import shayebushi.entities.units.*;
 import shayebushi.entities.units.Ownerc;
 import shayebushi.entities.weapons.TeShuWeapon;
+import shayebushi.graphics.SYBSMenuRenderer;
 import shayebushi.graphics.SYBSMinimapRenderer;
 import shayebushi.type.unit.DuoJieTiUnitType;
 import shayebushi.type.unit.SYBSUnitType;
@@ -642,8 +645,12 @@ public class ShaYeBuShi extends Mod implements SaveFileReader.CustomChunk {
         }) ;
         Events.run(Trigger.update, () -> {
             if (Core.input.keyDown(KeyCode.f12)) {
+                Fi f = Core.files.absolute("D:\\Mindustry-master\\core\\build\\libs\\A-files\\maps\\oldVersions\\units.dat") ;
+                int i = 0 ;
                 for (Unit u : Groups.unit) {
-                    System.out.println(u.type.localizedName);
+                    f.writeString(u.type.name + " " + u.x + " " + u.y + " " + u.rotation + " " + u.team.id + "\n", i != 0) ;
+                    i ++ ;
+                    //System.out.println(u.type.localizedName);
                 }
             }
             if (!(Groups.unit instanceof SYBSEntityGroup)) {
@@ -655,6 +662,24 @@ public class ShaYeBuShi extends Mod implements SaveFileReader.CustomChunk {
                 Groups.sync = new SYBSEntityGroup<>(mindustry.gen.Syncc.class, false, true, ei);
                 ei = (EntityIndexer) getPrivateField(Groups.draw, "indexer") ;
                 Groups.draw = new SYBSEntityGroup<>(mindustry.gen.Drawc.class, false, false, ei);
+            }
+            if (!(ui.planet instanceof SYBSPlanetDialog)) {
+                ui.planet = new SYBSPlanetDialog() ;
+            }
+            if (!(ui.research instanceof SYBSResearchDialog)) {
+                ui.research = new SYBSResearchDialog() ;
+            }
+            if (!(ui.content instanceof SYBSContentInfoDialog)) {
+                ui.content = new SYBSContentInfoDialog() ;
+            }
+            if (!(getPrivateField(ui.menufrag, "renderer") instanceof SYBSMenuRenderer)) {
+                setPrivateField(ui.menufrag, "renderer", new SYBSMenuRenderer());
+            }
+            if (!(getPrivateField(renderer, "minimap") instanceof SYBSMinimapRenderer)) {
+                setPrivateField(renderer, "minimap", new SYBSMinimapRenderer()) ;
+            }
+            if (!(getPrivateField(ui.hudfrag, "coreItems") instanceof SYBSCoreItemsDisplay)) {
+                setPrivateField(ui.hudfrag, "coreItems", new SYBSCoreItemsDisplay());
             }
             for (Unit u : Groups.unit) {
                 for (WeaponMount wm : u.mounts) {
@@ -764,7 +789,7 @@ public class ShaYeBuShi extends Mod implements SaveFileReader.CustomChunk {
                             a.moveTo(pucongweis.get(Math.min((int)(player.unit().hitSize / tilesize * 3), 40)).get(controlingUnits.indexOf(u)).cpy().add(player.unit()), 0) ;
                             //fixedPrintln(controlingUnits.indexOf(u));
                         }
-                        if (player.unit().mounts().length > 0 && player.unit().mounts[0].shoot) {
+                        if (player.unit().isShooting) {
                             for (WeaponMount w : u.mounts) {
                                 if (player.unit().mounts[0].target != null) {
                                     w.target = player.unit().mounts[0].target;
@@ -959,6 +984,10 @@ public class ShaYeBuShi extends Mod implements SaveFileReader.CustomChunk {
 //                }
             }
         });
+        Events.on(EventType.SaveWriteEvent.class, event -> {
+            //invokePrivateMethod(getPrivateField(ui.menufrag, "renderer"), "generate", new Seq()) ;
+            //((SYBSMenuRenderer) getPrivateField(ui.menufrag, "renderer")).generate() ;
+        }) ;
         /*
         Events.on(EventType.SaveWriteEvent.class, event -> {
             boolean bo = true ;
@@ -1063,6 +1092,7 @@ public class ShaYeBuShi extends Mod implements SaveFileReader.CustomChunk {
                     }
                 });
                 t.checkPref(Core.bundle.get("sybssets.youjian"), true);
+                t.checkPref(Core.bundle.get("sybssets.zhucaidan"), true);
                 t.sliderPref(Core.bundle.get("sybssets.nandu"), 3, 1, 5, i -> {
                     if (i == 1) {
                         tiaoshi = true ;
@@ -1111,14 +1141,20 @@ public class ShaYeBuShi extends Mod implements SaveFileReader.CustomChunk {
                 t.pref(s);
             });
             ui.planet = new SYBSPlanetDialog() ;
-            PlanetDialog.debugSelect = Version.build == -1 || tiaoshi ;
             ui.research = new SYBSResearchDialog() ;
+            ui.content = new SYBSContentInfoDialog() ;
+            if (ui.menufrag.getClass().getSimpleName() != MenuFragment.class.getSimpleName()) {
+                ui.menufrag = new MenuFragment() ;
+            }
+            setPrivateField(ui.menufrag, "renderer", new SYBSMenuRenderer());
+            ui.menufrag.build(ui.menuGroup) ;
+            setPrivateField(renderer, "minimap", new SYBSMinimapRenderer()) ;
+            setPrivateField(ui.hudfrag, "coreItems", new SYBSCoreItemsDisplay());
+            PlanetDialog.debugSelect = Version.build == -1 || tiaoshi ;
             renderer.minZoom = 0.1f ;
             renderer.maxZoom = 10f ;
-            ui.content = new SYBSContentInfoDialog() ;
             MapResizeDialog.maxSize = 5000 ;
             MapResizeDialog.minSize = 1 ;
-            setPrivateField(ui.hudfrag, "coreItems", new SYBSCoreItemsDisplay());
             ui.hudGroup.clear();
             ui.hudGroup.setFillParent(true);
             ui.hudGroup.touchable = Touchable.childrenOnly;
@@ -1131,7 +1167,6 @@ public class ShaYeBuShi extends Mod implements SaveFileReader.CustomChunk {
             ui.consolefrag.build(ui.hudGroup);
             ui.hudGroup.addChild(makeStatusTable().left().bottom().visible(() -> ui.hudfrag.shown));
             ui.hudGroup.addChild(makeBossBar().left().bottom().visible(() -> ui.hudfrag.shown));
-            setPrivateField(renderer, "minimap", new SYBSMinimapRenderer()) ;
             EntityIndexer ei = (EntityIndexer) getPrivateField(Groups.unit, "indexer") ;
             Groups.unit = new SYBSEntityGroup<>(mindustry.gen.Unit.class, true, true, ei);
             ei = (EntityIndexer) getPrivateField(Groups.all, "indexer") ;
@@ -1339,8 +1374,8 @@ public class ShaYeBuShi extends Mod implements SaveFileReader.CustomChunk {
         SYBSSounds.load() ;
         SYBSBullets.load() ;
         SYBSUnitTypes.load();
-        SYBSShenShengUnitTypes.load();
         SYBSBlocks.load();
+        SYBSShenShengUnitTypes.load();
         SYBSUnitAbilities.load();
         SYBSPlanets.load();
         SYBSSectorPresets.load();
@@ -1774,6 +1809,17 @@ public class ShaYeBuShi extends Mod implements SaveFileReader.CustomChunk {
             return null ;
         }
     }
+    public static Object getPrivateField(Class c, Object target, String name) {
+        try {
+            Field f = c.getDeclaredField(name) ;
+            f.setAccessible(true) ;
+            return f.get(target) ;
+        }
+        catch (Throwable t) {
+            t.printStackTrace() ;
+            return null ;
+        }
+    }
     public static void invokePrivateMethod(Object target, String name, Seq<Object> arguments) {
         try {
             Method m = target.getClass().getDeclaredMethod(name, arguments.map(Object::getClass).toArray(Class.class)) ;
@@ -2010,15 +2056,6 @@ public class ShaYeBuShi extends Mod implements SaveFileReader.CustomChunk {
     }
     public static Vec2 rotate(float sourceX, float sourceY, float angle, float posX, float posY) {
         return rotate(new Vec2(sourceX, sourceY), angle, posX, posY) ;
-    }
-    public static <T> Seq<T> filter(Seq<T> source, Boolf<T> check) {
-        Seq<T> out =  new Seq<>() ;
-        for (T t : source) {
-            if (check.get(t)) {
-                out.add(t) ;
-            }
-        }
-        return out ;
     }
 
 

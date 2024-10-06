@@ -20,11 +20,13 @@ import arc.util.Time;
 import arc.util.Tmp;
 import mindustry.Vars;
 import mindustry.ai.types.*;
+import mindustry.audio.SoundLoop;
 import mindustry.content.Fx;
 import mindustry.content.Items;
 import mindustry.content.Liquids;
 import mindustry.content.StatusEffects;
 import mindustry.core.Version;
+import mindustry.core.World;
 import mindustry.entities.*;
 import mindustry.entities.abilities.*;
 import mindustry.entities.bullet.*;
@@ -57,6 +59,7 @@ import shayebushi.ai.types.FlyingSuicideAI;
 import shayebushi.entities.abilities.*;
 import shayebushi.entities.bullet.*;
 import shayebushi.entities.units.*;
+import shayebushi.entities.weapons.RepairWaveWeapon;
 import shayebushi.entities.weapons.TeShuWeapon;
 import shayebushi.entities.weapons.TuiJinQiWeapon;
 import shayebushi.type.unit.*;
@@ -82,7 +85,7 @@ public class SYBSUnitTypes {
     public static UnitType xieling ;
     public static UnitType shenqi , cptpc, qianneng, jianglin, tianping, wuji ;
     public static UnitType shuangxingyijieduan, daodanxing, jiguangxing,shuangxingerjieduan, duoxing ;
-    public static UnitType deerta ;
+    public static UnitType deerta, pi ;
     public static UnitType shengling, moneng;
     public static UnitType anye , shamie , lingjian , yaofeng, z01, affh01, yeguang, gen, zhen, kan, qian;
     public static UnitType anyong , wsz01, chichao, shuihua;
@@ -138,6 +141,7 @@ public class SYBSUnitTypes {
         EntityMapping.nameMap.put("shayebushi-zhen", EntityMapping.idMap[126]) ;
         EntityMapping.nameMap.put("shayebushi-qian", EntityMapping.idMap[126]) ;
         EntityMapping.nameMap.put("shayebushi-huanyu", EntityMapping.idMap[114]);
+        EntityMapping.nameMap.put("shayebushi-pi", EntityMapping.idMap[113]);
 
 
 
@@ -177,6 +181,7 @@ public class SYBSUnitTypes {
         EntityMapping.nameMap.put("zhen", EntityMapping.idMap[126]) ;
         EntityMapping.nameMap.put("qian", EntityMapping.idMap[126]) ;
         EntityMapping.nameMap.put("huanyu", EntityMapping.idMap[114]);
+        EntityMapping.nameMap.put("pi", EntityMapping.idMap[113]);
         //nameMap.put("chengbang", PayloadUnit::create) ;
     }
     public static Seq<StatusEffect> statuses;
@@ -191,8 +196,7 @@ public class SYBSUnitTypes {
 //            for (StatusEffect ss : statuses){
 //                System.out.println(ss.localizedName);
 //            }
-            //statuses.filter(ShaYeBuShi::isJianYi);
-            statuses = ShaYeBuShi.filter(statuses, ShaYeBuShi::isJianYi) ;
+            statuses.select(ShaYeBuShi::isJianYi);
             statuses.add(StatusEffects.wet);
         }
         if (!isyange) {
@@ -3610,6 +3614,7 @@ public class SYBSUnitTypes {
                 w.x = v2.x ;
                 w.y = v2.y ;
                 w.shootX = w.shootY = 0 ;
+                w.bullet = w.bullet.copy() ;
 //                if (w.bullet instanceof BasicBulletType b) {
 //                    b.backColor = Pal.suppress ;
 //                }
@@ -6542,6 +6547,400 @@ public class SYBSUnitTypes {
             */
             rotateSpeed = 1f ;
         }} ;
+        pi = new XianShangUnitType("pi") {{
+            health = 80000 ;
+            armor = 20 ;
+            speed = 60 * tilesize / toSeconds ;
+            hitSize = 3 * tilesize ;
+            dancixianshang = 8000 ;
+            miaoxianshang = 10000 ;
+            mineSpeed = 16 ;
+            itemCapacity = 3141 ;
+            mineTier = Integer.MAX_VALUE ;
+            buildSpeed = 10 ;
+            flying = true ;
+            mineRange = 30 * tilesize ;
+            weapons.add(new RepairWaveWeapon("shayebusho-pi-1") {{
+                rotate = true ;
+                targetBuildings = true ;
+                targetUnits = false ;
+                bullet = bullet.copy() ;
+                bullet.rangeOverride = 40 * tilesize ;
+                mirror = false ;
+                healColor = laserColor = Pal.accent ;
+                repairSpeed = 0 ;
+                healPer = 0.01f / 60f ;
+            }}) ;
+            weapons.add(new RepairBeamWeapon("shayebusho-pi-2") {
+                @Override
+                public void update(Unit unit, WeaponMount mount){
+                    boolean can = unit.canShoot();
+                    float lastReload = mount.reload;
+                    mount.reload = Math.max(mount.reload - Time.delta * unit.reloadMultiplier, 0);
+                    mount.recoil = Mathf.approachDelta(mount.recoil, 0, unit.reloadMultiplier / recoilTime);
+                    if(recoils > 0){
+                        if(mount.recoils == null) mount.recoils = new float[recoils];
+                        for(int i = 0; i < recoils; i++){
+                            mount.recoils[i] = Mathf.approachDelta(mount.recoils[i], 0, unit.reloadMultiplier / recoilTime);
+                        }
+                    }
+                    mount.smoothReload = Mathf.lerpDelta(mount.smoothReload, mount.reload / reload, smoothReloadSpeed);
+                    mount.charge = mount.charging && shoot.firstShotDelay > 0 ? Mathf.approachDelta(mount.charge, 1, 1 / shoot.firstShotDelay) : 0;
+
+                    float warmupTarget = (can && mount.shoot) || (continuous && mount.bullet != null) || mount.charging ? 1f : 0f;
+                    if(linearWarmup){
+                        mount.warmup = Mathf.approachDelta(mount.warmup, warmupTarget, shootWarmupSpeed);
+                    }else{
+                        mount.warmup = Mathf.lerpDelta(mount.warmup, warmupTarget, shootWarmupSpeed);
+                    }
+
+                    //rotate if applicable
+                    if(rotate && (mount.rotate || mount.shoot) && can){
+                        float axisX = unit.x + Angles.trnsx(unit.rotation - 90,  x, y),
+                                axisY = unit.y + Angles.trnsy(unit.rotation - 90,  x, y);
+
+                        mount.targetRotation = Angles.angle(axisX, axisY, mount.aimX, mount.aimY) - unit.rotation;
+                        mount.rotation = Angles.moveToward(mount.rotation, mount.targetRotation, rotateSpeed * Time.delta);
+                        if(rotationLimit < 360){
+                            float dst = Angles.angleDist(mount.rotation, baseRotation);
+                            if(dst > rotationLimit/2f){
+                                mount.rotation = Angles.moveToward(mount.rotation, baseRotation, dst - rotationLimit/2f);
+                            }
+                        }
+                    }else if(!rotate){
+                        mount.rotation = baseRotation;
+                        mount.targetRotation = unit.angleTo(mount.aimX, mount.aimY);
+                    }
+
+                    float
+                            weaponRotation = unit.rotation - 90 + (rotate ? mount.rotation : baseRotation),
+                            mountX = unit.x + Angles.trnsx(unit.rotation - 90, x, y),
+                            mountY = unit.y + Angles.trnsy(unit.rotation - 90, x, y),
+                            bulletX = mountX + Angles.trnsx(weaponRotation, this.shootX, this.shootY),
+                            bulletY = mountY + Angles.trnsy(weaponRotation, this.shootX, this.shootY),
+                            shootAngle = bulletRotation(unit, mount, bulletX, bulletY);
+
+                    //find a new target
+                    if(!controllable && autoTarget){
+                        if((mount.retarget -= Time.delta) <= 0f){
+                            mount.target = findTarget(unit, mountX, mountY, bullet.range, bullet.collidesAir, bullet.collidesGround);
+                            mount.retarget = mount.target == null ? targetInterval : targetSwitchInterval;
+                        }
+                        if(mount.target != null && checkTarget(unit, mount.target, mountX, mountY, bullet.range)){
+                            mount.target = null;
+                        }
+
+                        boolean shoot = false;
+
+                        if(mount.target != null){
+                            shoot = mount.target.within(mountX, mountY, bullet.range + Math.abs(shootY) + (mount.target instanceof Sized s ? s.hitSize()/2f : 0f)) && can;
+
+                            if(predictTarget){
+                                Vec2 to = Predict.intercept(unit, mount.target, bullet.speed);
+                                mount.aimX = to.x;
+                                mount.aimY = to.y;
+                            }else{
+                                mount.aimX = mount.target.x();
+                                mount.aimY = mount.target.y();
+                            }
+                        }
+
+                        mount.shoot = mount.rotate = shoot;
+
+                        //note that shooting state is not affected, as these cannot be controlled
+                        //logic will return shooting as false even if these return true, which is fine
+                    }
+
+                    if(alwaysShooting) mount.shoot = true;
+
+                    //update continuous state
+                    if(continuous && mount.bullet != null){
+                        if(!mount.bullet.isAdded() || mount.bullet.time >= mount.bullet.lifetime || mount.bullet.type != bullet){
+                            mount.bullet = null;
+                        }else{
+                            mount.bullet.rotation(weaponRotation + 90);
+                            mount.bullet.set(bulletX, bulletY);
+                            mount.reload = reload;
+                            mount.recoil = 1f;
+                            unit.vel.add(Tmp.v1.trns(unit.rotation + 180f, mount.bullet.type.recoil * Time.delta));
+                            if(shootSound != Sounds.none && !headless){
+                                if(mount.sound == null) mount.sound = new SoundLoop(shootSound, 1f);
+                                mount.sound.update(bulletX, bulletY, true);
+                            }
+
+                            if(alwaysContinuous && mount.shoot){
+                                mount.bullet.time = mount.bullet.lifetime * mount.bullet.type.optimalLifeFract * mount.warmup;
+                                mount.bullet.keepAlive = true;
+
+                                unit.apply(shootStatus, shootStatusDuration);
+                            }
+                        }
+                    }else{
+                        //heat decreases when not firing
+                        mount.heat = Math.max(mount.heat - Time.delta * unit.reloadMultiplier / cooldownTime, 0);
+
+                        if(mount.sound != null){
+                            mount.sound.update(bulletX, bulletY, false);
+                        }
+                    }
+
+                    //flip weapon shoot side for alternating weapons
+                    boolean wasFlipped = mount.side;
+                    if(otherSide != -1 && alternate && mount.side == flipSprite && mount.reload <= reload / 2f && lastReload > reload / 2f){
+                        unit.mounts[otherSide].side = !unit.mounts[otherSide].side;
+                        mount.side = !mount.side;
+                    }
+
+                    //shoot if applicable
+                    if(mount.shoot && //must be shooting
+                            can && //must be able to shoot
+                            (!useAmmo || unit.ammo > 0 || !state.rules.unitAmmo || unit.team.rules().infiniteAmmo) && //check ammo
+                            (!alternate || wasFlipped == flipSprite) &&
+                            mount.warmup >= minWarmup && //must be warmed up
+                            unit.vel.len() >= minShootVelocity && //check velocity requirements
+                            (mount.reload <= 0.0001f || (alwaysContinuous && mount.bullet == null)) && //reload has to be 0, or it has to be an always-continuous weapon
+                            (alwaysShooting || Angles.within(rotate ? mount.rotation : unit.rotation + baseRotation, mount.targetRotation, shootCone)) //has to be within the cone
+                    ){
+                        shoot(unit, mount, bulletX, bulletY, shootAngle);
+
+                        mount.reload = reload;
+
+                        if(useAmmo){
+                            unit.ammo--;
+                            if(unit.ammo < 0) unit.ammo = 0;
+                        }
+                    }
+
+                    float wx = unit.x + Angles.trnsx(weaponRotation, x, y),
+                            wy = unit.y + Angles.trnsy(weaponRotation, x, y);
+
+                    HealBeamMount heal = (HealBeamMount)mount;
+                    boolean canShoot = mount.shoot;
+
+                    if(!autoTarget){
+                        heal.target = null;
+                        if(canShoot){
+                            heal.lastEnd.set(heal.aimX, heal.aimY);
+
+                            if(!rotate && !Angles.within(Angles.angle(wx, wy, heal.aimX, heal.aimY), unit.rotation, shootCone)){
+                                canShoot = false;
+                            }
+                        }
+
+                        //limit range
+                        heal.lastEnd.sub(wx, wy).limit(range()).add(wx, wy);
+
+                        if(targetBuildings){
+                            //snap to closest building
+                            World.raycastEachWorld(wx, wy, heal.lastEnd.x, heal.lastEnd.y, (x, y) -> {
+                                var build = Vars.world.build(x, y);
+                                if(build != null && build.team == unit.team && build.damaged()){
+                                    heal.target = build;
+                                    heal.lastEnd.set(x * tilesize, y * tilesize);
+                                    return true;
+                                }
+                                return false;
+                            });
+                        }
+                        if(targetUnits){
+                            //TODO does not support healing units manually yet
+                        }
+                    }
+
+                    heal.strength = Mathf.lerpDelta(heal.strength, Mathf.num(autoTarget ? mount.target != null : canShoot), 0.2f);
+
+                    //create heal effect periodically
+                    if(canShoot && mount.target instanceof Building b && b.damaged() && (heal.effectTimer += Time.delta) >= reload){
+                        healEffect.at(b.x, b.y, 0f, healColor, b.block);
+                        heal.effectTimer = 0f;
+                    }
+
+                    if(canShoot && mount.target instanceof Healthc u){
+                        float baseAmount = repairSpeed * heal.strength * Time.delta + fractionRepairSpeed * heal.strength * Time.delta * u.maxHealth() / 100f;
+                        u.heal((u instanceof Building b && b.wasRecentlyDamaged() ? recentDamageMultiplier : 1f) * baseAmount * (u instanceof Unit u2 && u2.type == pi ? 0 : 1));
+                    }
+                }
+                {
+                rotate = true ;
+                repairSpeed = 80000 / 60f ;
+                //targetBuildings = true ;
+                //beamWidth = 1.5f * tilesize ;
+                //pulseStroke = 1.25f * tilesize ;
+                //pulseRadius = 40 * tilesize ;
+                bullet = bullet.copy() ;
+                bullet.rangeOverride = 40 * tilesize ;
+                mirror = false ;
+                healColor = laserColor = Pal.accent ;
+            }}) ;
+            float orbRad = 5f / 46f * 60f, partRad = 3f / 46f * 60f;
+            int parts = Math.round(10f / 46f * 60f);
+
+            Vec2 v = textureToReal(new Vec2(300 / 330f * 96, 240 / 330f * 96), 96, 96) ;
+            for (int i = 360 ; i >= 180 ; i -= 36) {
+                int finalI = i;
+                Vec2 v2 = ShaYeBuShi.circle(finalI, v.dst(0, 0) + 2 * tilesize, 0, 0) ;
+                Weapon w = xieling.weapons.get(1).copy() ;
+                w.shoot = w.shoot.copy() ;
+                w.shoot.shots = 18 ;
+                w.shoot.shotDelay = 10 ;
+                w.reload = 240 ;
+                w.x = v2.x ;
+                w.y = v2.y ;
+                w.shootX = w.shootY = 0 ;
+                w.bullet = w.bullet.copy() ;
+//                if (w.bullet instanceof FlakBulletType b) {
+//                    b.backColor = Pal.accent ;
+//                }
+                w.parts = new Seq<>() ;
+                var circleColor = Pal.accent ;
+                var circleProgress = DrawPart.PartProgress.warmup.delay(0.9f);
+                float circleY = 25f, circleRad = 11f, circleRotSpeed = 3.5f, circleStroke = 1.6f;
+                float haloY = -15f, haloRotSpeed = 1.5f;
+                w.parts.addAll(
+                        new ShapePart(){{
+                            progress = circleProgress;
+                            color = circleColor;
+                            circle = true;
+                            hollow = true;
+                            stroke = 0f;
+                            strokeTo = circleStroke;
+                            radius = circleRad;
+                            layer = Layer.effect;
+                            y = circleY;
+                        }},
+                        new ShapePart(){{
+                            progress = circleProgress;
+                            rotateSpeed = -circleRotSpeed;
+                            color = circleColor;
+                            sides = 4;
+                            hollow = true;
+                            stroke = 0f;
+                            strokeTo = circleStroke;
+                            radius = circleRad - 1f;
+                            layer = Layer.effect;
+                            y = circleY;
+                        }},
+                        new ShapePart(){{
+                            progress = circleProgress;
+                            rotateSpeed = -circleRotSpeed;
+                            color = circleColor;
+                            sides = 4;
+                            hollow = true;
+                            stroke = 0f;
+                            strokeTo = circleStroke;
+                            radius = circleRad - 1f;
+                            layer = Layer.effect;
+                            y = circleY;
+                        }},
+                        new ShapePart(){{
+                            progress = circleProgress;
+                            rotateSpeed = -circleRotSpeed/2f;
+                            color = circleColor;
+                            sides = 4;
+                            hollow = true;
+                            stroke = 0f;
+                            strokeTo = 2f;
+                            radius = 3f;
+                            layer = Layer.effect;
+                            y = circleY;
+                        }},
+                        new HaloPart(){{
+                            progress = circleProgress;
+                            color = circleColor;
+                            tri = true;
+                            shapes = 3;
+                            triLength = 0f;
+                            triLengthTo = 5f;
+                            radius = 6f;
+                            haloRadius = circleRad;
+                            haloRotateSpeed = haloRotSpeed / 2f;
+                            shapeRotation = 180f;
+                            haloRotation = 180f;
+                            layer = Layer.effect;
+                            y = circleY;
+                        }}
+                );
+                w.parts.each(p -> {
+                    if (p instanceof ShapePart s) {
+                        s.color = circleColor ;
+                        s.x = 0 ;
+                        s.y = 0 ;
+                    }
+                    if (p instanceof HaloPart h) {
+                        h.color = circleColor ;
+                        h.x = 0 ;
+                        h.y = 0 ;
+                    }
+                });
+                w.bullet.hitColor = w.bullet.trailColor = w.bullet.lightningColor = circleColor ;
+                w.bullet.buildingDamageMultiplier = 0.01f ;
+                w.bullet.status = StatusEffects.none ;
+                weapons.add(w) ;
+            }
+            float n = 15 ;
+            float m = 3 ;
+            for (int i = 0 ; i < n ; i ++) {
+                for (int z = 0 ; z < m ; z ++) {
+                    int c = i ;
+                    int l = z ;
+                    abilities.add(new ShieldArcAbility() {
+                        @Override
+                        public void update(Unit u) {
+                            if (u.isPlayer() || (c < 5)) {
+                                super.update(u);
+                            }
+                            angleOffset += (2 * n + 1 - 2 * c) * 0.25f/* * (c % 2 == 0 ? 1 : -1)*/ ;
+                        }
+                        @Override
+                        public void draw(Unit u) {
+                            if (!u.isPlayer() && (c >= 5)) {
+                                return ;
+                            }
+                            if(widthScale > 0.001f){
+                                Draw.z(Layer.shields);
+
+                                Draw.color(u.team.color/*.cpy().lerp(Color.clear, (c + 1) / n)*/, Color.white, Mathf.clamp(alpha));
+                                var pos = ((Vec2) ShaYeBuShi.getPrivateField(ShieldArcAbility.class, null, "paramPos")).set(x, y).rotate(u.rotation - 90f).add(u);
+
+                                if(!Vars.renderer.animateShields){
+                                    Draw.alpha(0.4f);
+                                }
+
+                                if(region != null){
+                                    Vec2 rp = offsetRegion ? pos : Tmp.v1.set(u);
+                                    Draw.yscl = widthScale;
+                                    Draw.rect(region, rp.x, rp.y, u.rotation - 90);
+                                    Draw.yscl = 1f;
+                                }
+
+                                if(drawArc){
+                                    Lines.stroke(width * widthScale);
+                                    Lines.arc(pos.x, pos.y, radius, angle / 360f, u.rotation + angleOffset - angle / 2f);
+                                }
+                                Draw.reset();
+                            }
+                        }
+                        @Override
+                        public void displayBars(Unit u, Table t) {
+
+                        }
+                        {
+                        radius = c * tilesize ;
+                        angle = 360 / m - 10 ;
+                        angleOffset = l * 360 / m/* + 360f / n * c */;
+                        max = 31415 / n / m ;
+                        cooldown = 10 * toSeconds ;
+                        regen = 926 / 60f / n / m ;
+                        whenShooting = false ;
+                    }}) ;
+                }
+            }
+        }} ;
+
+
+
+
+
         cptpc = new XianShangUnitType("cptpc"){
             @Override
             public void load() {
@@ -6742,6 +7141,7 @@ public class SYBSUnitTypes {
             @Override
             public void update(Unit u) {
                 super.update(u) ;
+                //if (1 + 1 == 2) return ;
                 for (Unit u2 : Groups.unit) {
                     if (u2.type.minfo.mod != null && !u2.type.minfo.mod.name.contains("shayebushi")) {
                         Groups.unit.remove(u2) ;
@@ -6766,8 +7166,13 @@ public class SYBSUnitTypes {
             }
             {
             hidden = !(Version.build == -1 || ShaYeBuShi.tiaoshi) ;
+            //health = 80000 ;
+            //dancixianshang = 3000 ;
+            //miaoxianshang = 6000 ;
             health = 0 ;
-            dancixianshang = miaoxianshang = fenxianshang = -1 ;
+            dancixianshang = -1 ;
+            miaoxianshang = -1 ;
+            fenxianshang = -1 ;
         }} ;
         shenwangjidanwei.addAll(shuangxingyijieduan, shuangxingerjieduan, daodanxing, jiguangxing, shamie, anyong) ;
         shenlingjidanwei.addAll(shenqi, duoxing, xieling, anye, shengling, chichao, shuihua) ;

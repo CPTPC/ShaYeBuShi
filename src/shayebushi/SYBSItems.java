@@ -24,7 +24,7 @@ public class SYBSItems {
             //lei,
             you, you235, you238,
                     //you233,
-                    fangfushe, ruangang, yijihejin, erjihejin, sanjihejin, xiangjiao, suliao, hashihejin, hefeiliao, daole;
+                    fangfushe, ruangang, yijihejin, erjihejin, sanjihejin, xiangjiao, suliao, hashihejin, hefeiliao, daole, yanmieneng, anjinshu, anwuzhihejin, shendiwuzhuang, shendizhuangjia, shendidongli, huimiewuzhuanglantu, huimiezhuangjialantu, huimiedonglilantu, shendilantu;
     public static SYBSItem deleike, yiduntanding, bulaoen, talituosi, liumingjing, yuemingzhu, shayebushi ;
     public static final Seq<Item> deleikeItems = new Seq<>() ;
     public static void load(){
@@ -94,7 +94,9 @@ public class SYBSItems {
             radioactivity = 0 ;
             charge = 2f ;
         }};
-        xiangjiao = new Item("xiangjiao" , Color.valueOf("563030"));
+        xiangjiao = new Item("xiangjiao" , Color.valueOf("563030")) {{
+            flammability = 0.85f ;
+        }};
         suliao = new Item("suliao" , Color.valueOf("eeeeee")) {{
             hidden = !(Version.build == -1 || ShaYeBuShi.tiaoshi) ;
         }};
@@ -104,6 +106,30 @@ public class SYBSItems {
             explosiveness = 6 ;
             fusheqiangdu = 40 / 25f ;
         }};
+        shendiwuzhuang = new Item("shendiwuzhuang",Color.valueOf("222222"));
+        shendizhuangjia = new Item("shendizhuangjia",Color.valueOf("333333"));
+        shendidongli = new Item("shendidongli",Color.valueOf("444444"));
+        huimiewuzhuanglantu = new LanTuItem("huimiewuzhuanglantu",Color.valueOf("442244"));
+        huimiezhuangjialantu = new LanTuItem("huimiezhuangjialantu",Color.valueOf("332233"));
+        huimiedonglilantu = new LanTuItem("huimiedonglilantu",Color.valueOf("224422"));
+        shendilantu = new LanTuItem("shendilantu",Color.valueOf("223322"));
+        yanmieneng = new Item("yanmieneng",Color.valueOf("333333"));
+        anjinshu = new Item("anjinshu",Color.valueOf("444444")) {{
+            explosiveness = 0.5f ;
+            flammability = 0.5f ;
+            radioactivity = 0.2f ;
+            charge = 1 ;
+        }};
+        anwuzhihejin = new LanTuItem("anwuzhihejin",Color.valueOf("442244")) {{
+            explosiveness = 0.75f ;
+            flammability = 0.75f ;
+            radioactivity = 0.25f ;
+            charge = 1.5f ;
+        }};
+
+
+
+
         daole = new SYBSItem("daole") {{
             hidden = !(Version.build == -1 || ShaYeBuShi.tiaoshi) ;
         }} ;
@@ -131,7 +157,7 @@ public class SYBSItems {
             hidden = !(Version.build == -1 || ShaYeBuShi.tiaoshi) ;
         }} ;
         deleikeItems.add(Items.serpuloItems);
-        deleikeItems.addAll(li,lv,taihejin,shenlingwuzhuang,shenlingzhuangjia,shenlingdongli,shenlinglantu, you, you235, you238, fangfushe, ruangang, yijihejin, erjihejin, sanjihejin, xiangjiao, suliao, hashihejin);
+        deleikeItems.addAll(li,lv,taihejin,shenlingwuzhuang,shenlingzhuangjia,shenlingdongli,shenlinglantu, you, you235, you238, fangfushe, ruangang, yijihejin, erjihejin, sanjihejin, xiangjiao, hashihejin, hefeiliao, yanmieneng, anjinshu, anwuzhihejin, shendiwuzhuang, shendizhuangjia, shendidongli, huimiewuzhuanglantu, huimiezhuangjialantu, huimiedonglilantu, shendilantu);
         deleikeItems.addAll(deleike) ;
         deleikeItems.addAll(Items.erekirItems) ;
     }

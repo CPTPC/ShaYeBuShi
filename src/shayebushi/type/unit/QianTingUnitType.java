@@ -25,6 +25,7 @@ public class QianTingUnitType extends SYBSUnitType {
         us[commands.length] = SYBSUnitCommands.xiaqianCommand ;
         System.arraycopy(commands, 0, us, 0, commands.length);
         commands = us ;
+        defaultCommand = SYBSUnitCommands.xiaqianCommand ;
     }
     @Override
     public boolean targetable(Unit unit, Team team){

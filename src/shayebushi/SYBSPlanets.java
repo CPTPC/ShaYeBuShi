@@ -89,7 +89,7 @@ public class SYBSPlanets {
             };
             unlockedOnLand.add(SYBSBlocks.yijihexin);
             //updateLighting = true ;
-            orbitRadius = 60 ;
+            orbitRadius = 80 ;
             launchCapacityMultiplier = 1f;
             //sectorSeed = 2;
             //allowWaves = true;
@@ -184,6 +184,7 @@ public class SYBSPlanets {
                     new HexSkyMesh(this, 3, 0.6f, 0.15f, 5, Color.valueOf("0097f5").a(0.75f), 2, 0.42f, 1.2f, 0.45f)
             );
             alwaysUnlocked = visible = accessible = true ;
+            alwaysUnlocked = false ;
             iconColor = Color.valueOf("0097f5") ;
 
             ruleSetter = r -> {

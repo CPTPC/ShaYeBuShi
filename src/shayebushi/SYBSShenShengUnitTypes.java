@@ -19,6 +19,7 @@ import mindustry.content.Fx;
 import mindustry.content.Items;
 import mindustry.content.StatusEffects;
 import mindustry.ctype.ContentType;
+import mindustry.entities.abilities.MoveEffectAbility;
 import mindustry.entities.bullet.*;
 import mindustry.entities.effect.MultiEffect;
 import mindustry.entities.effect.WaveEffect;
@@ -26,10 +27,7 @@ import mindustry.entities.effect.WrapEffect;
 import mindustry.entities.part.DrawPart;
 import mindustry.entities.part.HaloPart;
 import mindustry.entities.part.ShapePart;
-import mindustry.entities.pattern.ShootAlternate;
-import mindustry.entities.pattern.ShootHelix;
-import mindustry.entities.pattern.ShootMulti;
-import mindustry.entities.pattern.ShootSpread;
+import mindustry.entities.pattern.*;
 import mindustry.game.Team;
 import mindustry.gen.*;
 import mindustry.graphics.Layer;
@@ -38,9 +36,11 @@ import mindustry.type.StatusEffect;
 import mindustry.type.UnitType;
 import mindustry.type.Weapon;
 import mindustry.type.ammo.ItemAmmoType;
+import mindustry.type.unit.MissileUnitType;
 import mindustry.world.meta.BlockFlag;
 import mindustry.world.meta.Stat;
 import mindustry.world.meta.StatUnit;
+import shayebushi.ai.types.DuoJieTiAI;
 import shayebushi.ai.types.JieTiAI;
 import shayebushi.entities.bullet.*;
 import shayebushi.entities.units.JieTiUnit;
@@ -53,6 +53,7 @@ import shayebushi.type.unit.XianShangUnitType;
 import static arc.util.Time.toMinutes;
 import static arc.util.Time.toSeconds;
 import static mindustry.Vars.tilesize;
+import static shayebushi.SYBSPal.*;
 import static shayebushi.SYBSUnitTypes.loadWeapons;
 
 public class SYBSShenShengUnitTypes {
@@ -2238,12 +2239,15 @@ public class SYBSShenShengUnitTypes {
             reload = 600 / 2f / 1.25f * 4 ;
             rotate = true ;
             bullet = new LaserBulletType() {{
-                length = 65 * tilesize ;
+                length = 90 * tilesize ;
                 damage = 4500 * 4 ;
                 status = SYBSStatusEffects.huaxuedianran ;
                 statusDuration = 30 * toSeconds ;
-                width = 1.5f * tilesize ;
+                width = 4.5f * tilesize ;
                 colors = new Color[]{SYBSPal.yaofeng.cpy().mul(1f, 1f, 1f, 0.4f), SYBSPal.yaofeng, Color.white} ;
+                //fragBullet = copy() ;
+                //fragBullets = 1 ;
+                //((LaserBulletType) fragBullet).width *= 3 ;
             }} ;
             shootSound = Sounds.laser ;
             shake = 2 ;
@@ -2265,9 +2269,133 @@ public class SYBSShenShengUnitTypes {
                 lightColor = hitColor = backColor = Pal.redderDust ;
                 speed *= 6f ;
                 lifetime *= 2f ;
+                homingPower = 1 ;
+                homingRange = 5 * tilesize ;
             }} ;
             shootSound = Sounds.laser ;
             shake = 2 ;
+        }};
+        Weapon shougedaodan = new Weapon("shouge-fupao") {{
+            x = 0 ;
+            y = 0 ;
+            mirror = false ;
+            reload = 600 / 2f / 1.25f * 4 ;
+            //rotate = true ;
+            shoot = new ShootSummon(0, 0, 4 * tilesize, 30) ;
+            shoot.shots = 5 ;
+            shoot.shotDelay = 15 ;
+            bullet = new BasicBulletType(0f, 1){{
+                shootEffect = Fx.shootBig;
+                smokeEffect = Fx.shootSmokeMissile;
+                ammoMultiplier = 1f;
+
+                spawnUnit = new MissileUnitType("shouge-daodan"){{
+                    speed = 4.6f * 2 ;
+                    maxRange = 6f;
+                    lifetime = 60f * 5.5f / 2 ;
+                    outlineColor = Pal.darkOutline;
+                    engineColor = trailColor = Pal.redderDust;
+                    engineLayer = Layer.effect;
+                    engineSize = 3.1f;
+                    engineOffset = 10f;
+                    trailLength = 18;
+                    missileAccelTime = 120f;
+                    lowAltitude = true;
+                    loopSound = Sounds.missileTrail;
+                    loopSoundVolume = 0.6f;
+                    deathSound = Sounds.largeExplosion;
+                    //targetAir = false;
+
+                    fogRadius = 6f;
+
+                    health = 210;
+
+                    weapons.add(new Weapon(){{
+                        shootCone = 360f;
+                        mirror = false;
+                        reload = 1f;
+                        deathExplosionEffect = Fx.massiveExplosion;
+                        shootOnDeath = true;
+                        shake = 10f;
+                        bullet = new ExplosionBulletType(700f, 65f){{
+                            hitColor = Pal.redderDust;
+                            shootEffect = new MultiEffect(Fx.massiveExplosion, Fx.scatheExplosion, Fx.scatheLight, new WaveEffect(){{
+                                lifetime = 10f;
+                                strokeFrom = 4f;
+                                sizeTo = 130f;
+                            }});
+
+                            //collidesAir = false;
+                            buildingDamageMultiplier = 0.3f;
+
+                            ammoMultiplier = 1f;
+                            fragLifeMin = 0.1f;
+                            fragBullets = 7;
+                            fragBullet = new ArtilleryBulletType(3.4f, 32){{
+                                buildingDamageMultiplier = 0.3f;
+                                drag = 0.02f;
+                                hitEffect = Fx.massiveExplosion;
+                                despawnEffect = Fx.scatheSlash;
+                                knockback = 0.8f;
+                                lifetime = 23f;
+                                width = height = 18f;
+                                collidesTiles = false;
+                                splashDamageRadius = 40f;
+                                splashDamage = 80f;
+                                backColor = trailColor = hitColor = Pal.redderDust;
+                                frontColor = Color.white;
+                                smokeEffect = Fx.shootBigSmoke2;
+                                despawnShake = 7f;
+                                lightRadius = 30f;
+                                lightColor = Pal.redderDust;
+                                lightOpacity = 0.5f;
+
+                                trailLength = 20;
+                                trailWidth = 3.5f;
+                                trailEffect = Fx.none;
+                            }};
+                            fragBullet = copy() ;
+                            fragBullets = 5 ;
+                            fragSpread = 40 ;
+                        }};
+                        //bullet = SYBSBlocks.zhadan.type ;
+                    }});
+
+                    abilities.add(new MoveEffectAbility(){{
+                        effect = Fx.missileTrailSmoke ;
+                        //effect = SYBSFx.fixedMissileTrailSmoke;
+                        rotation = 180f;
+                        y = -9f;
+                        color = Color.grays(0.6f).lerp(Pal.redderDust, 0.5f).a(0.4f);
+                        interval = 7f / 2 ;
+                    }});
+                }};
+            }} ;
+            BulletType b = new PointBulletType() {{
+                shootEffect = Fx.shootBig;
+                smokeEffect = Fx.shootSmokeMissile;
+                hitEffect = new MultiEffect(new WrapEffect(SYBSFx.fixedMassiveExplosion, Pal.redLight, 0), new WrapEffect(Fx.dynamicSpikes, Pal.redderDust, 24f), new WaveEffect(){{
+                    colorFrom = colorTo = Pal.redLight;
+                    sizeTo = 40f;
+                    lifetime = 12f;
+                    strokeFrom = 4f;
+                }}); ;
+                trailEffect = Fx.none ;
+                lifetime = 1 ;
+                speed = 185 * tilesize ;
+                fragBullets = 1 ;
+                fragBullet = bullet ;
+                fragRandomSpread = 0 ;
+                fragAngle = 180 ;
+                fragSpread = 0 ;
+                pierce = true ;
+                fragOnHit = false ;
+            }} ;
+            bullet = b ;
+            shootSound = Sounds.missileLarge ;
+            shake = 15 ;
+            baseRotation = -90 ;
+            shootCone = 360 ;
         }};
         shougejieti = new JieTiUnitType("shougejieti") {
             @Override
@@ -2290,7 +2418,7 @@ public class SYBSShenShengUnitTypes {
                 hidden = true ;
                 hoverable = false ;
                 isEnemy = false ;
-                weapons.add(shougejiguang, shougefantan) ;
+                weapons.add(shougejiguang, shougefantan, shougedaodan) ;
             }};
         shouge = new DuoJieTiUnitType("shouge") {
             @Override
@@ -2310,38 +2438,42 @@ public class SYBSShenShengUnitTypes {
                 jietiAmount = 50 ;
                 jietitype = shougejieti ;
                 circleTarget = true ;
-                aiController = FlyingAI::new;
-                outlines = false ;
-                weapons.add(shougejiguang, shougefantan) ;
+                aiController = DuoJieTiAI::new;
+                //outlines = false ;
+                weapons.add(shougejiguang, shougefantan, shougedaodan) ;
                 weapons.add(new Weapon("shouge-zhupao"){{
                     x = 0 ;
                     y = 0 ;
                     mirror = false ;
                     reload = 1200 ;
-                    rotate = false ;
+                    rotate = true ;
                     continuous = true ;
                     bullet = new ZhongJiLengJingBulletType() {{
-                        length = 60 * tilesize ;
+                        length = 120 * tilesize ;
                         damage = 5000f / toSeconds ;
                         damageInterval = 1 ;
                         status = SYBSStatusEffects.huaxuedianran ;
                         statusDuration = toMinutes ;
                         colors = new Color[]{SYBSPal.yaofeng.cpy().mul(1f, 1f, 1f, 0.4f), SYBSPal.yaofeng, Color.white} ;
-                        width = 0.85f * tilesize ;
+                        width = 3.5f * tilesize ;
                         lifetime = 900 ;
+                        lightRadius = 10 * tilesize ;
+                        //loopSound = Sounds.laserbig ;
                         sanshetype = new BaiFenBiChiXuJiGuangBulletType() {{
                             length = 120 * tilesize ;
                             damage = 5000 / toSeconds ;
                             damageInterval = 1 ;
                             status = SYBSStatusEffects.huaxuedianran ;
                             statusDuration = toMinutes ;
+                            lightRadius = 10 * tilesize ;
                             colors = new Color[]{SYBSPal.yaofeng.cpy().mul(1f, 1f, 1f, 0.4f), SYBSPal.yaofeng, Color.white} ;
-                            width = 0.85f * tilesize ;
-                            lifetime = 10 ;
+                            width = 3.5f * tilesize ;
+                            lifetime = 900 ;
                             baifenbi = 0 ;
                         }};
                     }} ;
-                    shootSound = Sounds.laserbig ;
+                    //bullet = SYBSBlocks.ronghui.shootType ;
+                    shootSound = Sounds.laserbeam ;
                     shake = 2 ;
                 }});
             }};

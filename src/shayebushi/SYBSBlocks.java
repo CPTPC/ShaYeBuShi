@@ -16,6 +16,7 @@ import arc.struct.IntSeq;
 import arc.struct.ObjectMap;
 import arc.struct.Seq;
 import arc.util.Structs;
+import mindustry.ai.UnitCommand;
 import mindustry.content.*;
 import mindustry.core.Version;
 import mindustry.ctype.ContentType;
@@ -72,7 +73,7 @@ import mindustry.world.modules.PowerModule;
 import shayebushi.entities.bullet.*;
 //import shayebushi.world.block.defense.turrets.TurretCeFan;
 import shayebushi.world.blocks.*;
-import shayebushi.world.blocks.abilities.JieLieAbility;
+import shayebushi.world.blocks.abilities.*;
 import shayebushi.world.blocks.defense.FangFuSheLiChang;
 import shayebushi.world.blocks.defense.WallPowerTurret;
 import shayebushi.world.blocks.defense.ZhenDangHuDunBlock;
@@ -86,6 +87,7 @@ import shayebushi.world.blocks.power.DianYaConsumeGenerator;
 import shayebushi.world.blocks.power.DianYaNode;
 import shayebushi.world.blocks.power.HeFanYingDui;
 import shayebushi.world.blocks.production.*;
+import shayebushi.world.blocks.storage.MultiCore;
 import shayebushi.world.blocks.units.ChongZhiRuKou;
 import shayebushi.world.blocks.units.DanWeiZhiZaoChang;
 import shayebushi.world.blocks.units.LanTuChongGouChang;
@@ -141,7 +143,7 @@ public class SYBSBlocks {
     public static TurretSangZhong sangzhong ;
     public static OverdriveProjector jixianchaosu ;
     public static ShuangChongZuanTou duogongnengzuantou ;
-    public static WallPowerTurret shenlingzhenghe ;
+    public static WallPowerTurret shenlingzhenghe, shendizhenghe ;
     public static ZengYuanBuShuBlock zengyuanbushu ;
     public static TiaoJieShiJianBlock tiaojieshijian ;
     public static ShiKuaiBlock[] shikuais = {null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null};
@@ -190,7 +192,7 @@ public class SYBSBlocks {
     public static MendProjector xiulijihuotouyingqi;
     public static MultiBlock zhanquweihuxitong ;
     public static HeatConductor weixingreliangchuanshuji, weixingreliangluyouqi ;
-    public static ZhenDangHuDunBlock zhendanghudunfashengqi ;
+    public static ZhenDangHuDunBlock zhendanghudunfashengqi, shengyu ;
     public static UnitFactory kongjungongchang = (UnitFactory) Blocks.airFactory ;
     public static MultiCrafter lixichongzuhejinduanlu ;
     public static GenericCrafter daxingdianjieji, daxinglengdongyehunheqi, ruangangduandaji ;
@@ -198,6 +200,7 @@ public class SYBSBlocks {
     public static HeatProducer daxingyanghuashi ;
     public static PowerTurret zaiezujian ;
     public static MultiBlock zaie ;
+    public static MultiCore sanjihexin ;
     public static void load() {
         moyan = new TurretMoYan("moyan"){{
             requirements(Category.turret, with(Items.carbide, 900, Items.beryllium, 1000, silicon, 1000, li, 1000, lv, 1000, taihejin, 1200, Items.phaseFabric, 900));
@@ -1961,10 +1964,10 @@ public class SYBSBlocks {
             hasPower = true;
             consumesPower = true;
             conductivePower = true;
-            chanceDeflect = 8f;
+            chanceDeflect = 20f;
             armor = 24f;
             buildCostMultiplier = 300f;
-            consumePower(0.25f) ;
+            consumePower(5.5f) ;
             ((DrawWallTurret)drawer).basePrefix = "shenlingchenghe-" ;
             Color haloColor = Pal.sapBullet ;
             var circleColor = haloColor;
@@ -3149,13 +3152,15 @@ public class SYBSBlocks {
             health = 1000 ;
             consume(new ConsumeDianYa(60, 0, false, 2));
         }} ;
-        zhanquweihuxitong = new MultiBlockXianZhi("zhanquweihuxitong", zhendanghudunfashengqi, new Vec2(0, 0), jixianchaosu, new Vec2(0, 0), xiulijihuotouyingqi, new Vec2(0, 0), xiulijihuotouyingqi, new Vec2(0, 0), Blocks.repairTurret, new Vec2(-tilesize, tilesize), Blocks.repairTurret, new Vec2(tilesize, -tilesize)) {{
+        zhanquweihuxitong = new MultiBlockXianZhi("zhanquweihuxitong", jixianchaosu, new Vec2(0, 0), xiulijihuotouyingqi, new Vec2(0, 0), xiulijihuotouyingqi, new Vec2(0, 0), Blocks.repairTurret, new Vec2(-tilesize, tilesize), Blocks.repairTurret, new Vec2(tilesize, -tilesize)) {{
             requirements(Category.effect, with(taihejin, 1000, Items.titanium, 2000, silicon, 1500, Items.phaseFabric, 800, ruangang, 800, xiangjiao, 800)) ;
             health = 4000 ;
             consume(new ConsumeDianYa(15000 / 60f, 0, false, 2)) ;
             itemCapacity = 80 ;
             size = 4 ;
             limitPlaceOnCount = 1 ;
+            abilities.add(new ZhenDangHuDunAbility(zhendanghudunfashengqi.radius, zhendanghudunfashengqi.cooldownNormal, zhendanghudunfashengqi.shieldHealth, zhendanghudunfashengqi.shieldHealth / zhendanghudunfashengqi.cooldownBrokenBase, zhendanghudunfashengqi.sides, zhendanghudunfashengqi.shieldRotation, zhendanghudunfashengqi.damage + zhendanghudunfashengqi.poxianshangDamage)) ;
+            //drawPayload.set(new Boolean[]{false, false, false, false, true, true}) ;
         }} ;
         weixingreliangchuanshuji = new ReLiangChuanShuJi("weixingreliangchuanshuji"){{
             requirements(Category.crafting, with(Items.tungsten, 10, Items.graphite, 10));
@@ -3403,6 +3408,7 @@ public class SYBSBlocks {
             shake = 10 ;
             recoil = 3 ;
         }} ;
+        /*
         zaie = new MultiBlock("zaie", zaiezujian, new Vec2(-2.5f * tilesize, 0), zaiezujian, new Vec2(0, 0), zaiezujian, new Vec2(2.5f * tilesize, 0)) {{
             requirements(Category.turret, with(Items.copper, 3000, Items.surgeAlloy, 400, Items.plastanium, 400, Items.silicon, 1200, taihejin, 1000, li, 1000, lv, 1000)) ;
             consume(new ConsumeDianYa(50, 0, false, 1)) ;
@@ -3410,6 +3416,213 @@ public class SYBSBlocks {
             health = 4000 ;
             outlineIcon = false ;
         }} ;
+        */
+        zaie = new MultiBlock("zaie", zaiezujian, ShaYeBuShi.circle(90, 2.5f * tilesize, 0, 0), zaiezujian, ShaYeBuShi.circle(-30, 2.5f * tilesize, 0, 0), zaiezujian, ShaYeBuShi.circle(210, 2.5f * tilesize, 0, 0)) {{
+            requirements(Category.turret, with(Items.copper, 3000, Items.surgeAlloy, 400, Items.plastanium, 400, Items.silicon, 1200, taihejin, 1000, li, 1000, lv, 1000)) ;
+            consume(new ConsumeDianYa(50, 0, false, 1)) ;
+            size = 5 ;
+            health = 4000 ;
+            outlineIcon = false ;
+        }} ;
+        shendizhenghe = new WallPowerTurret("shendizhenghe"){{
+            requirements(Category.defense, with(shendidongli, 1, shendiwuzhuang, 1, shendizhuangjia, 1, shendilantu, 1));
+            health = 800000 ;
+            size = 4 ;
+            absorbLasers = true;
+            //rotate = true;
+            lightningChance = 1f;
+            lightningDamage = 100f / 72000 * 800000 ;
+            shieldHealth = 4500f / 72000 * 800000 ;
+            regenSpeed = 1000 / 60f ;
+            outputsPower = false;
+            hasPower = true;
+            consumesPower = true;
+            conductivePower = true;
+            chanceDeflect = 50f;
+            armor = 100f;
+            buildCostMultiplier = 300f;
+            abilities.add(new XianShangAbility(), new ShieldArcAbility() {{
+                radius = size * tilesize ;
+                width *= 2 ;
+                max = shieldHealth ;
+                regen = regenSpeed ;
+                whenShooting = false ;
+                angle = 361 ;
+            }}, new ShieldArcAbility() {{
+                width *= 2 ;
+                radius = size * tilesize + width + 1 ;
+                max = shieldHealth ;
+                regen = regenSpeed ;
+                whenShooting = false ;
+                angle = 361 ;
+            }}) ;
+            consumeDianYa(this, 250f, 2) ;
+            ((DrawWallTurret)drawer).basePrefix = "shendizhenghe-" ;
+            var haloProgress = DrawPart.PartProgress.warmup;
+            Color haloColor = Color.valueOf("aa6600");
+            float haloY = -15f, haloRotSpeed = 1.5f;
+
+            var circleProgress = DrawPart.PartProgress.warmup.delay(0.9f);
+            var circleColor = haloColor;
+            float circleY = 0f, circleRad = 16.5f, circleRotSpeed = 3.5f, circleStroke = 1.6f;
+            ((DrawWallTurret)drawer).parts.addAll(
+                    new ShapePart(){{
+                        progress = circleProgress;
+                        color = circleColor;
+                        sides = 4;
+                        hollow = true;
+                        stroke = 0f;
+                        strokeTo = circleStroke;
+                        radius = circleRad;
+                        layer = Layer.effect;
+                        y = circleY;
+                    }},
+                    new ShapePart(){{
+                        progress = circleProgress;
+                        rotateSpeed = circleRotSpeed;
+                        color = circleColor;
+                        sides = 3 ;
+                        hollow = true;
+                        stroke = 0f;
+                        strokeTo = circleStroke;
+                        radius = circleRad;
+                        layer = Layer.effect;
+                        y = circleY;
+                    }},
+                    new ShapePart(){{
+                        progress = circleProgress;
+                        rotateSpeed = -circleRotSpeed;
+                        color = circleColor;
+                        sides = 3 ;
+                        hollow = true;
+                        rotation = 90 ;
+                        stroke = 0f;
+                        strokeTo = circleStroke;
+                        radius = circleRad;
+                        layer = Layer.effect;
+                        y = circleY;
+                    }}
+            );
+            shootY = 11f;
+            reload = 150f;
+            recoil = 5f;
+            shake = 2f;
+            shootSound = Sounds.missileLarge;
+            shoot = new ShootSpread(30, 0.75f);
+            shoot.shotDelay = 0.2f ;
+            shootType = new GaiLvMiaoBulletType(13f, 1600,1000){{
+                pierce = true;
+                pierceCap = 10;
+                width = 14f;
+                height = 33f;
+                hitSize = 30 ;
+                lifetime = 45f;
+                homingPower = 0.5f;
+                homingDelay = 15f;
+                homingRange = 585f;
+                shootEffect = Fx.shootSmokeMissile;
+                fragVelocityMin = 0.4f;
+                trailChance = 1f ;
+                trailInterval = 1f ;
+                trailEffect = new Effect(30, e -> {
+                    for(int i = 0; i < 2; i++){
+                        color(i == 0 ? Color.valueOf("aa6600") : Color.valueOf("aa6600"));
+
+                        float m = i == 0 ? 1f : 0.5f;
+
+                        float rot = e.rotation + 180f;
+                        float w = 15f * e.fout() * m;
+                        Drawf.tri(e.x, e.y, w, (30f + Mathf.randomSeedRange(e.id, 15f)) * m, rot);
+                        Drawf.tri(e.x, e.y, w, 10f * m, rot + 180f);
+                    }
+
+                    Drawf.light(e.x, e.y, 60f, Color.valueOf("aa6600"), 0.6f * e.fout());
+                }) ;
+                hitColor = Color.valueOf("aa6600") ;
+                hitEffect = Fx.titanExplosion;
+                splashDamage = 1800f;
+                splashDamageRadius = 80f;
+            }};
+            range = shootType.lifetime * shootType.speed ;
+            //limitRange(tilesize) ;
+        }};
+        shengyu = new ZhenDangHuDunBlock("shengyu") {{
+            requirements(Category.effect, with(anwuzhihejin, 2000, silicon, 12000, xiangjiao, 8000, sanjihejin, 4000, anjinshu, 4000)) ;
+            consumeDianYa(this, 100000 / 60f, 3) ;
+            damage = 50000 ;
+            poxianshang = false ;
+            sides = 4 ;
+            shieldRotation = 45 ;
+            shieldHealth = 2000000 ;
+            cooldownNormal = cooldownLiquid = 80000 ;
+            cooldownBrokenBase = shieldHealth / 40 / 60 ;
+            radius = 80 * tilesize ;
+            abilities.add(new RepairAbility(), new ShieldArcAbility() {{
+                whenShooting = true ;
+                max = 2000000 ;
+                angle = 360 ;
+                radius = 80 * tilesize ;
+                width *= 5 ;
+            }}) ;
+            fantan = true ;
+            poxianshangDamage = 200000 ;
+            health = 40000 ;
+            armor = 80 ;
+            size = 7 ;
+            consumeCoolant = false ;
+        }} ;
+        sanjihexin = new MultiCore("sanjihexin", TurretDieTai.dietais.get("dietai").get(8), new Vec2(0, 0)) {{
+            requirements(Category.effect, with(anwuzhihejin, 5000, silicon, 30000, xiangjiao, 30000, sanjihejin, 10000, anjinshu, 10000, phaseFabric, 20000)) ;
+            health = 200000 ;
+            armor = 60 ;
+            itemCapacity = 4000000 ;
+            unitCapModifier = 100 ;
+            unitType = pi ;
+            abilities.add(new XianShangAbility() {{
+                dancixianshang = 20000 ;
+                miaoxianshang = 100000 ;
+            }}, new RepairAbility(), new ShieldArcAbility() {{
+                whenShooting = true ;
+                max = 2000000 ;
+                angle = 360 ;
+                radius = 80 * tilesize ;
+                width *= 5 ;
+            }}, new ZhenDangHuDunAbility(shengyu.radius, shengyu.cooldownNormal, shengyu.shieldHealth, shengyu.shieldHealth / shengyu.cooldownBrokenBase, shengyu.sides, shengyu.shieldRotation, shengyu.damage + shengyu.poxianshangDamage) {
+                @Override
+                public void update(Building b) {
+                    super.update(b) ;
+                    rotation += 0.75f ;
+                }
+            }) ;
+            size = 7 ;
+            hasPower = true ;
+            //drawPayload.set(1, false) ;
+            int n = 5, m = 5, t = 5 * tilesize ;
+            for (int i = 1 ; i <= n ; i ++) {
+                for (int z = 1 ; z <= m ; z ++) {
+                    Vec2 v = ShaYeBuShi.circle(360f / m * z + 360f / n * i, i * t, 0, 0) ;
+                    abilities.add(new UnitSpawnAbility(unitType, 10 * toSeconds, v.x, v.y) {{
+                        cons = u -> {
+                            //System.out.println(u.controller().getClass().getSimpleName());
+                            if (u.isCommandable()) {
+                                switch (u.team.data().typeCounts[u.type.id] % 3) {
+                                    case 0 -> {
+                                        u.command().command(UnitCommand.mineCommand);
+                                    }
+                                    case 1 -> {
+                                        u.command().command(UnitCommand.repairCommand);
+                                    }
+                                    case 2 -> {
+                                        u.command().command(UnitCommand.rebuildCommand);
+                                    }
+                                }
+                            }
+                        } ;
+                    }}) ;
+                }
+            }
+        }} ;
+
 
 
 
@@ -3672,5 +3885,8 @@ public class SYBSBlocks {
         kongjungongchang.plans.add(
                 new UnitFactory.UnitPlan(z01, toMinutes, with(surgeAlloy, 50, ruangang, 50, silicon, 150, plastanium, 50)),
                 new UnitFactory.UnitPlan(affh01, toMinutes, with(surgeAlloy, 50, ruangang, 50, silicon, 150, plastanium, 50))) ;
+    }
+    public static void consumeDianYa(Block b, float usage, int dianya) {
+        b.consume(new ConsumeDianYa(usage, 0, false, dianya)) ;
     }
 }

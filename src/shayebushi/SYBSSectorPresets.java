@@ -57,9 +57,6 @@ public class SYBSSectorPresets {
            difficulty = 6 ;
            //alwaysFushe = true ;
         }};
-        qinggongyequ = new SYBSSectorPreset("qinggongyequ", SYBSPlanets.deleike, 88) {{
-            difficulty = 7 ;
-        }};
         rongyantongdao = new SYBSSectorPreset("rongyantongdao", SYBSPlanets.deleike, 68) {{
             captureWave = 300 ;
             difficulty = 8 ;
@@ -127,6 +124,9 @@ public class SYBSSectorPresets {
                         unitAmount = 5 ;
                         end = 6 ;
                     }}) ;
+        }} ;
+        qinggongyequ = new SYBSSectorPreset("qinggongyequ") {{
+            difficulty = 8 ;
         }} ;
         map = ObjectMap.of(
                 "熔岩通道", rongyantongdao,
