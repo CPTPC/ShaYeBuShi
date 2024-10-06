@@ -32,7 +32,7 @@ public class WallPowerTurret extends WallTurret{
     @Override
     public void setStats(){
         super.setStats();
-        stats.add(Stat.ammo, StatValues.ammo(ObjectMap.of(this, shootType)));
+        stats.add(Stat.ammo, SYBSStatValues.ammo(ObjectMap.of(this, shootType)));
     }
 
     public void limitRange(float margin){

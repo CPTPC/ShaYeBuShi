@@ -11,24 +11,28 @@ import mindustry.world.Block;
 public class BlockAbility implements Cloneable {
     public boolean display = true;
     public float data;
+    public int id ;
+    public static int count ;
 
     public void update(Building build){}
     public void draw(Building build){}
     public void death(Building build){}
     public void init(Block type){
-        displayBars(type);
+        resetId() ;
     }
 
     public BlockAbility copy(){
         try{
-            return (BlockAbility)clone();
+            BlockAbility ba = (BlockAbility)clone() ;
+            ba.resetId() ;
+            return ba ;
         }catch(CloneNotSupportedException e){
             //I am disgusted
             throw new RuntimeException("java sucks", e);
         }
     }
 
-    public void displayBars(Block build){
+    public void displayBars(Building build, Table table){
 
     }
 
@@ -47,5 +51,17 @@ public class BlockAbility implements Cloneable {
 
     public void onRead(Building b) {
 
+    }
+
+    public void drawPlace(int x, int y, int rotation, boolean valid){
+
+    }
+
+    public void drawSelect(Building b) {
+
+    }
+
+    public void resetId() {
+        id = count ++ ;
     }
 }

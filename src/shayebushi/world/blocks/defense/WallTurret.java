@@ -47,7 +47,7 @@ import shayebushi.world.draw.DrawWallTurret;
 import static mindustry.Vars.state;
 import static mindustry.Vars.tilesize;
 
-public class WallTurret extends ShieldWall {
+public class WallTurret extends AbilityWall {
     public float range = 80f;
     public float placeOverlapMargin = 8 * 7f;
     public float rotateSpeed = 5;
@@ -282,7 +282,7 @@ public class WallTurret extends ShieldWall {
         public abstract BulletType type();
     }
 
-    public class WallTurretBuild extends ShieldWallBuild implements ControlBlock, Ranged {
+    public class WallTurretBuild extends AbilityWallBuild implements ControlBlock, Ranged {
         //TODO storing these as instance variables is horrible design
         /** Turret sprite offset, based on recoil. Updated every frame. */
         public Vec2 recoilOffset = new Vec2();

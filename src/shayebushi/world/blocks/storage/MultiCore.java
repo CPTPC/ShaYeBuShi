@@ -1,9 +1,7 @@
-package shayebushi.world.blocks;
+package shayebushi.world.blocks.storage;
 
 import arc.Core;
-import arc.func.Func;
 import arc.graphics.g2d.Draw;
-import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
 import arc.math.geom.Vec2;
 import arc.struct.ObjectMap;
@@ -11,24 +9,21 @@ import arc.struct.OrderedMap;
 import arc.struct.Seq;
 import arc.util.Eachable;
 import arc.util.Interval;
-import arc.util.Time;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import mindustry.Vars;
 import mindustry.audio.SoundLoop;
-import mindustry.content.Liquids;
 import mindustry.content.UnitTypes;
-import mindustry.ctype.MappableContent;
-import mindustry.ctype.UnlockableContent;
-import mindustry.entities.abilities.Ability;
 import mindustry.entities.units.BuildPlan;
 import mindustry.game.Team;
-import mindustry.gen.*;
+import mindustry.gen.BlockUnitc;
+import mindustry.gen.Building;
+import mindustry.gen.Sounds;
+import mindustry.gen.Unit;
 import mindustry.graphics.Layer;
 import mindustry.input.Binding;
 import mindustry.type.Item;
 import mindustry.type.Liquid;
-import mindustry.ui.Bar;
 import mindustry.world.Block;
 import mindustry.world.blocks.ControlBlock;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
@@ -36,35 +31,33 @@ import mindustry.world.blocks.defense.turrets.Turret;
 import mindustry.world.blocks.payloads.BuildPayload;
 import mindustry.world.blocks.payloads.Payload;
 import mindustry.world.blocks.production.GenericCrafter;
-import mindustry.world.draw.DrawTurret;
-import mindustry.world.meta.*;
+import mindustry.world.blocks.storage.CoreBlock;
+import mindustry.world.meta.Stat;
+import mindustry.world.meta.StatCat;
 import mindustry.world.modules.ItemModule;
 import mindustry.world.modules.LiquidModule;
 import mindustry.world.modules.PowerModule;
-import shayebushi.SYBSUnitTypes;
-import shayebushi.ShaYeBuShi;
 import shayebushi.world.blocks.abilities.BlockAbility;
 import shayebushi.world.blocks.defense.WallTurret;
 import shayebushi.world.blocks.defense.turrets.AbilityTurret;
-import shayebushi.world.draw.DrawAbilityTurret;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import static mindustry.Vars.emptyTile;
 import static mindustry.Vars.tilesize;
 
-public class MultiBlock extends AbilityBlock {
+public class MultiCore extends AbilityCore {
     public Seq<Object> turrets = new Seq<>() ;
-//    public ObjectMap<Payload, Vec2> payloads = new ObjectMap<>() ;
+    //    public ObjectMap<Payload, Vec2> payloads = new ObjectMap<>() ;
 //    public ObjectMap<ItemTurret, Item> ammos = new ObjectMap<>() ;
     public boolean playerControllable = true;
+    public float defualtPower = 100000 ;
     public Seq<Boolean> drawPayload = new Seq<>() ;
-    public MultiBlock(String name) {
+    public MultiCore(String name) {
         super(name);
         itemCapacity = 50 ;
     }
-    public MultiBlock(String name, Object... turret) {
+    public MultiCore(String name, Object... turret) {
         this(name);
         configurable = true ;
         saveConfig = true ;
@@ -242,7 +235,7 @@ public class MultiBlock extends AbilityBlock {
             return s.toArray(TextureRegion.class) ;
         }
         */
-    public class MultiBuild extends AbilityBuild implements ControlBlock {
+    public class MultiBuild extends AbilityCoreBuild implements ControlBlock {
         public BlockUnitc unit = (BlockUnitc) UnitTypes.block.create(team);
         public ObjectMap<Payload, Vec2> pay = new ObjectMap<>() ;
         public Vec2 targetPos = new Vec2() ;
@@ -257,7 +250,7 @@ public class MultiBlock extends AbilityBlock {
                     b.build.wasVisible = true ;
                     b.build.enabled = true ;
                     b2 = b.build.efficiency <= 0 ;
-                    //b2 = false ;
+                    b2 = false ;
                     b.build.efficiency = efficiency ;
                     if (b2) {
                         b.build.updateTile() ;
@@ -431,8 +424,8 @@ public class MultiBlock extends AbilityBlock {
                 else {
                     p.draw();
                 }
+                i ++ ;
             }
-            i ++ ;
             //Draw.reset();
         }
         @Override
@@ -488,7 +481,7 @@ public class MultiBlock extends AbilityBlock {
                     out += b.build.getPowerProduction() ;
                 }
             }
-            return out ;
+            return out + defualtPower ;
         }
         @Override
         public void drawStatus() {

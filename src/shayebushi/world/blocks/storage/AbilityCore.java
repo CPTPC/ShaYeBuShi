@@ -1,23 +1,22 @@
-package shayebushi.world.blocks;
+package shayebushi.world.blocks.storage;
 
 import arc.scene.ui.layout.Table;
 import arc.struct.ObjectSet;
 import arc.struct.Seq;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
-import mindustry.entities.abilities.Ability;
 import mindustry.game.Team;
 import mindustry.gen.Building;
 import mindustry.world.Block;
-import mindustry.world.blocks.defense.turrets.Turret;
+import mindustry.world.blocks.storage.CoreBlock;
 import mindustry.world.meta.Stat;
 import shayebushi.world.blocks.abilities.BlockAbility;
 
-public class AbilityBlock extends Block {
+public class AbilityCore extends CoreBlock {
 
     public Seq<BlockAbility> abilities = new Seq<>() ;
 
-    public AbilityBlock(String name) {
+    public AbilityCore(String name) {
         super(name);
         update = true ;
     }
@@ -51,8 +50,7 @@ public class AbilityBlock extends Block {
         }
     }
 
-
-    public class AbilityBuild extends Building {
+    public class AbilityCoreBuild extends CoreBuild {
         public Seq<BlockAbility> as = new Seq<>() ;
         @Override
         public void killed() {
@@ -64,6 +62,7 @@ public class AbilityBlock extends Block {
         @Override
         public void updateTile() {
             super.updateTile();
+            //System.out.println(as.size) ;
             for (BlockAbility ba : as) {
                 ba.update(this);
             }
