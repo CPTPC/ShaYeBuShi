@@ -113,14 +113,19 @@ public class SYBSItems {
         huimiezhuangjialantu = new LanTuItem("huimiezhuangjialantu",Color.valueOf("332233"));
         huimiedonglilantu = new LanTuItem("huimiedonglilantu",Color.valueOf("224422"));
         shendilantu = new LanTuItem("shendilantu",Color.valueOf("223322"));
-        yanmieneng = new Item("yanmieneng",Color.valueOf("333333"));
+        yanmieneng = new Item("yanmieneng",Color.valueOf("333333")) {{
+            explosiveness = 12f ;
+            flammability = 12f ;
+            radioactivity = 0f ;
+            charge = 0 ;
+        }};
         anjinshu = new Item("anjinshu",Color.valueOf("444444")) {{
             explosiveness = 0.5f ;
             flammability = 0.5f ;
             radioactivity = 0.2f ;
             charge = 1 ;
         }};
-        anwuzhihejin = new LanTuItem("anwuzhihejin",Color.valueOf("442244")) {{
+        anwuzhihejin = new Item("anwuzhihejin",Color.valueOf("442244")) {{
             explosiveness = 0.75f ;
             flammability = 0.75f ;
             radioactivity = 0.25f ;

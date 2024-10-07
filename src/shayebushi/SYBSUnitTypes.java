@@ -21,10 +21,7 @@ import arc.util.Tmp;
 import mindustry.Vars;
 import mindustry.ai.types.*;
 import mindustry.audio.SoundLoop;
-import mindustry.content.Fx;
-import mindustry.content.Items;
-import mindustry.content.Liquids;
-import mindustry.content.StatusEffects;
+import mindustry.content.*;
 import mindustry.core.Version;
 import mindustry.core.World;
 import mindustry.entities.*;
@@ -54,6 +51,7 @@ import mindustry.type.unit.ErekirUnitType;
 import mindustry.type.unit.MissileUnitType;
 import mindustry.type.weapons.PointDefenseWeapon;
 import mindustry.type.weapons.RepairBeamWeapon;
+import mindustry.world.blocks.defense.turrets.ItemTurret;
 import mindustry.world.meta.*;
 import shayebushi.ai.types.FlyingSuicideAI;
 import shayebushi.entities.abilities.*;
@@ -2687,12 +2685,12 @@ public class SYBSUnitTypes {
             {
             constructor = XianShangUnitEntity::new ;
             speed = 0.3f;
-            hitSize = 100f;
+            hitSize = 120f;
             rotateSpeed = 1.65f;
-            health = 800000;
+            health = 850000;
             armor = 300f;
             mechStepParticles = true;
-            stepShake = 0.75f;
+            stepShake = 3.75f;
             drownTimeMultiplier = 6f;
             mechFrontSway = 1.9f;
             mechSideSway = 0.6f;
@@ -2700,7 +2698,7 @@ public class SYBSUnitTypes {
             miaoxianshang = 28000 * 1.1f;
             //fenxianshang = 780000 * 1.1f;
             //immunise(this,false,1);
-            ammoType = new ItemAmmoType(Items.thorium);
+            //ammoType = new ItemAmmoType(Items.thorium);
             abilities.add(new XiuJiFuShiChangAbility(300,60,1800,400,100,SYBSStatusEffects.zhongdufushi,SYBSStatusEffects.dangji,StatusEffects.disarmed,StatusEffects.blasted,StatusEffects.freezing,StatusEffects.sapped,StatusEffects.wet,StatusEffects.shocked,StatusEffects.electrified,SYBSStatusEffects.diaoling),
                 new XiuJiLingYuChangAbility(0.4f,1024,30),new XiuJiDunJiaAbility()
             );
@@ -2836,11 +2834,11 @@ public class SYBSUnitTypes {
                 {
                 top = false;
                 mirror = true ;
-                x = 50 ;
+                x = 10 * tilesize ;
                 shootSound = Sounds.laserblast;
                 //loopSound = Sounds.beam;
                 //loopSoundVolume = 2f;
-                shootY = 2f;
+                shootY = textureToReal(new Vec2(160, 76), 299, 750).y ;
                     parts.addAll(
                             new ShapePart(){{
                                 progress = circleProgress;
@@ -2851,7 +2849,7 @@ public class SYBSUnitTypes {
                                 strokeTo = circleStroke;
                                 radius = circleRad;
                                 layer = Layer.effect;
-                                y = circleY;
+                                y = shootY;
                             }},
                             new ShapePart(){{
                                 progress = circleProgress;
@@ -2863,7 +2861,7 @@ public class SYBSUnitTypes {
                                 strokeTo = circleStroke;
                                 radius = circleRad;
                                 layer = Layer.effect;
-                                y = circleY;
+                                y = shootY;
                             }},
                             new ShapePart(){{
                                 progress = circleProgress;
@@ -2876,7 +2874,7 @@ public class SYBSUnitTypes {
                                 strokeTo = circleStroke;
                                 radius = circleRad;
                                 layer = Layer.effect;
-                                y = circleY;
+                                y = shootY;
                             }}
                     );
                     reload = 200f;
@@ -3111,6 +3109,7 @@ public class SYBSUnitTypes {
                         }};
                     }}
             );
+            /*
             weapons.add(
                     new Weapon("xiuji-lianjv"){
                         @Override
@@ -3140,7 +3139,33 @@ public class SYBSUnitTypes {
                             bullet = new JvChiBulletType(333.334f, 1145, 1000);
                         }}
             );
+            */
+            weapons.add(new Weapon("xiuji-lianjv") {{
+                mirror = false ;
+                shootSound = ((ItemTurret) Blocks.breach).shootSound ;
+                shoot = new ShootSummon(0f, 0f, 1, 2f);
+                reload = 1 ;
+                shootX = 10 * tilesize ;
+                int i = id ;
+                rotate = false ;
+                bullet = new TianDingBulletType() {{
+                    //blockId = i ;
+                    len = 60 * tilesize ;
+                    wid = 20 * tilesize ;
+                    speed = 15 ;
+                    width = height = 1.25f * tilesize ;
+                    color = SYBSPal.xiuji ;
+                    baifenbi = 0 ;
+                    damage = 25000 / (60 / reload) ;
+                    status = 1 ;
+                    multiplier = 0.15f ;
+                    drawItem = false ;
+                    sprite = "missile-large-back" ;
+                    unitId = i ;
+                }} ;
+            }}) ;
         }};
+//        ((TianDingBulletType)xiuji.weapons.get(xiuji.weapons.size - 1).bullet).unitId = xiuji.id ;
         shamie = new UnitType("shamie"){
             @Override
             public void load() {
@@ -5395,9 +5420,9 @@ public class SYBSUnitTypes {
                         new Weapon("wuji-1"){{
                             top = false;
                             mirror = false;
-                            y = -6f;
+                            y = -6f + 1.25f * tilesize;
                             x = 0f;
-                            shootY = 11f;
+                            shootY = textureToReal(new Vec2(100, 162), 200, 450).y;
                             reload = 180f;
                             recoil = 5f;
                             shake = 2f;
@@ -5661,7 +5686,10 @@ public class SYBSUnitTypes {
                             top = false;
                             y = -5f;
                             x = 30f;
-                            shootY = 11f;
+                            Vec2 v = textureToReal(new Vec2(508, 209), 600, 450) ;
+                            x = v.x ;
+                            y = v.y ;
+                            shootY = textureToReal(new Vec2(59, 23), 120, 340).y;
                             reload = 90f;
                             recoil = 5f;
                             shake = 4f;

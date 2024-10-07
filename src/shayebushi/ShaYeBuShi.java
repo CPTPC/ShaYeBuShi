@@ -672,7 +672,7 @@ public class ShaYeBuShi extends Mod implements SaveFileReader.CustomChunk {
             if (!(ui.content instanceof SYBSContentInfoDialog)) {
                 ui.content = new SYBSContentInfoDialog() ;
             }
-            if (!(getPrivateField(ui.menufrag, "renderer") instanceof SYBSMenuRenderer)) {
+            if (!(getPrivateField(ui.menufrag, "renderer") instanceof SYBSMenuRenderer) && Version.build != -1) {
                 setPrivateField(ui.menufrag, "renderer", new SYBSMenuRenderer());
             }
             if (!(getPrivateField(renderer, "minimap") instanceof SYBSMinimapRenderer)) {

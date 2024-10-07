@@ -3030,7 +3030,7 @@ public class SYBSBlocks {
             amount = 35 ;
             size = 3 ;
             health = 460 ;
-            reloadB = 180 ;
+            reloadB = 1.5f * toMinutes ;
             type = new ExplosionBulletType(9600 * 2, 16 * tilesize) {
                 @Override
                 public void createSplashDamage(Bullet b, float x, float y){
@@ -3377,6 +3377,7 @@ public class SYBSBlocks {
             }} ;
             outlineIcon = false ;
             Color c = you.color ;
+            /*
             drawer = new DrawTurret("none-") {{
                 parts.addAll(new ShapePart() {{
                     y = -5 * tilesize ;
@@ -3404,6 +3405,7 @@ public class SYBSBlocks {
                     radius = 2 ;
                 }}) ;
             }} ;
+            */
             shootSound = ((Turret)Blocks.breach).shootSound ;
             shake = 10 ;
             recoil = 3 ;
@@ -3417,7 +3419,7 @@ public class SYBSBlocks {
             outlineIcon = false ;
         }} ;
         */
-        zaie = new MultiBlock("zaie", zaiezujian, ShaYeBuShi.circle(90, 2.5f * tilesize, 0, 0), zaiezujian, ShaYeBuShi.circle(-30, 2.5f * tilesize, 0, 0), zaiezujian, ShaYeBuShi.circle(210, 2.5f * tilesize, 0, 0)) {{
+        zaie = new MultiBlock("zaie", zaiezujian, ShaYeBuShi.circle(90, 1.25f * tilesize, 0, 0), zaiezujian, ShaYeBuShi.circle(-30, 1.25f * tilesize, 0, 0), zaiezujian, ShaYeBuShi.circle(210, 1.25f * tilesize, 0, 0)) {{
             requirements(Category.turret, with(Items.copper, 3000, Items.surgeAlloy, 400, Items.plastanium, 400, Items.silicon, 1200, taihejin, 1000, li, 1000, lv, 1000)) ;
             consume(new ConsumeDianYa(50, 0, false, 1)) ;
             size = 5 ;
@@ -3426,7 +3428,7 @@ public class SYBSBlocks {
         }} ;
         shendizhenghe = new WallPowerTurret("shendizhenghe"){{
             requirements(Category.defense, with(shendidongli, 1, shendiwuzhuang, 1, shendizhuangjia, 1, shendilantu, 1));
-            health = 800000 ;
+            health = 850000 ;
             size = 4 ;
             absorbLasers = true;
             //rotate = true;
@@ -3440,7 +3442,7 @@ public class SYBSBlocks {
             conductivePower = true;
             chanceDeflect = 50f;
             armor = 100f;
-            buildCostMultiplier = 300f;
+            buildCostMultiplier = 500f;
             abilities.add(new XianShangAbility(), new ShieldArcAbility() {{
                 radius = size * tilesize ;
                 width *= 2 ;

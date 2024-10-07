@@ -4,8 +4,10 @@ import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Fill;
 import arc.math.Angles;
+import arc.math.Interp;
 import arc.math.Mathf;
 import arc.math.geom.Geometry;
+import arc.math.geom.Vec2;
 import arc.scene.ui.layout.Table;
 import arc.struct.ObjectMap;
 import arc.struct.Seq;
@@ -25,6 +27,7 @@ import mindustry.entities.effect.MultiEffect;
 import mindustry.entities.effect.WaveEffect;
 import mindustry.entities.effect.WrapEffect;
 import mindustry.entities.part.DrawPart;
+import mindustry.entities.part.FlarePart;
 import mindustry.entities.part.HaloPart;
 import mindustry.entities.part.ShapePart;
 import mindustry.entities.pattern.*;
@@ -53,6 +56,7 @@ import shayebushi.type.unit.XianShangUnitType;
 import static arc.util.Time.toMinutes;
 import static arc.util.Time.toSeconds;
 import static mindustry.Vars.tilesize;
+import static mindustry.graphics.Pal.redderDust;
 import static shayebushi.SYBSPal.*;
 import static shayebushi.SYBSUnitTypes.loadWeapons;
 
@@ -710,10 +714,10 @@ public class SYBSShenShengUnitTypes {
             statusDuration = 300 ;
             despawnHit = true ;
             hitEffect = SYBSFx.baozha2 ;
-            hitColor = Pal.redderDust ;
+            hitColor = redderDust ;
             hitShake = 10 ;
             parts.add(new HaloPart(){{
-                color = Pal.redderDust;
+                color = redderDust;
                 layer = Layer.effect;
                 y = 0;
                 haloRotateSpeed = -1.5f;
@@ -727,7 +731,7 @@ public class SYBSShenShengUnitTypes {
                 tri = true;
                 radius = 10f;
             }}, new HaloPart(){{
-                color = Pal.redderDust;
+                color = redderDust;
                 layer = Layer.effect;
                 y = 0;
                 haloRotateSpeed = 2f;
@@ -746,13 +750,13 @@ public class SYBSShenShengUnitTypes {
                 splashDamage = damage ;
                 despawnHit = true ;
                 hitEffect = SYBSFx.baozha2 ;
-                hitColor = Pal.redderDust ;
+                hitColor = redderDust ;
                 hitShake = 3 ;
                 status = SYBSStatusEffects.zhongdufushi ;
                 statusDuration = 300 ;
                 lifetime = 14f;
                 parts.add(new HaloPart(){{
-                    color = Pal.redderDust;
+                    color = redderDust;
                     layer = Layer.effect;
                     y = 0;
                     haloRotateSpeed = -1.5f;
@@ -766,7 +770,7 @@ public class SYBSShenShengUnitTypes {
                     tri = true;
                     radius = 10f;
                 }}, new HaloPart(){{
-                    color = Pal.redderDust;
+                    color = redderDust;
                     layer = Layer.effect;
                     y = 0;
                     haloRotateSpeed = 2f;
@@ -787,7 +791,7 @@ public class SYBSShenShengUnitTypes {
             lifetime = 14.1f * 6;
             height = 25 ;
             width = 15 ;
-            trailColor = Pal.redderDust ;
+            trailColor = redderDust ;
             trailEffect = SYBSFx.lizi1;
             trailInterval = 1 ;
             //trailLength = 40 ;
@@ -814,8 +818,8 @@ public class SYBSShenShengUnitTypes {
             ammoMultiplier = 1f;
             status = StatusEffects.shocked;
             statusDuration = 300f;
-            colors[0] = Pal.redderDust.cpy().mul(1f, 1f, 1f, 0.4f);
-            colors[1] = Pal.redderDust;
+            colors[0] = redderDust.cpy().mul(1f, 1f, 1f, 0.4f);
+            colors[1] = redderDust;
             lightning = 10 ;
             lightningLength = 16 ;
             lightningType = new BulletType(0.0001f, 2000f) {{
@@ -968,7 +972,7 @@ public class SYBSShenShengUnitTypes {
             //engines.add(new SYBSUnitEngine(0,0,40,315));
 
             var haloProgress = DrawPart.PartProgress.warmup;
-            Color haloColor = Pal.redderDust;
+            Color haloColor = redderDust;
             float haloY = -15f, haloRotSpeed = 1.5f;
 
             var circleProgress = DrawPart.PartProgress.warmup.delay(0.9f);
@@ -1125,7 +1129,7 @@ public class SYBSShenShengUnitTypes {
                                 status = SYBSStatusEffects.duidies.get("paichi").get(0) ;
                                 statusDuration = 300 ;
                                 shootEffect = new MultiEffect(Fx.shootTitan, Fx.colorSparkBig, new WaveEffect(){{
-                                    colorFrom = colorTo = Pal.redderDust;
+                                    colorFrom = colorTo = redderDust;
                                     lifetime = 12f;
                                     sizeTo = 20f;
                                     strokeFrom = 3f;
@@ -1136,14 +1140,14 @@ public class SYBSShenShengUnitTypes {
                                 pierceCap = 40;
                                 pierce = true;
                                 pierceBuilding = true;
-                                hitColor = backColor = trailColor = Pal.redderDust;
+                                hitColor = backColor = trailColor = redderDust;
                                 frontColor = Color.white;
                                 trailWidth = 2.8f;
                                 trailLength = 9;
                                 hitEffect = Fx.hitBulletColor;
                                 despawnEffect = new MultiEffect(Fx.hitBulletColor, new WaveEffect(){{
                                     sizeTo = 30f;
-                                    colorFrom = colorTo = Pal.redderDust;
+                                    colorFrom = colorTo = redderDust;
                                     lifetime = 12f;
                                 }});
 
@@ -1158,7 +1162,7 @@ public class SYBSShenShengUnitTypes {
                                     buildingDamageMultiplier = 1.5f ;
                                     collidesAir = false;
                                     ammoMultiplier = 1f;
-                                    lightningColor = Pal.redderDust;
+                                    lightningColor = redderDust;
                                     lightningLength = 5;
                                     lightningLengthRand = 10;
                                     lightningType = new BulletType(0.0001f, 550f){{
@@ -1351,10 +1355,10 @@ public class SYBSShenShengUnitTypes {
                 ammoMultiplier = 1f;
                 status = StatusEffects.shocked;
                 statusDuration = 300f;
-                colors[0] = Pal.redderDust.cpy().mul(1f, 1f, 1f, 0.4f) ;
-                colors[1] = Pal.redderDust ;
+                colors[0] = redderDust.cpy().mul(1f, 1f, 1f, 0.4f) ;
+                colors[1] = redderDust ;
                 lightningType = new BulletType(0.0001f, 2000f){{
-                    lightningColor = hitColor = Pal.redderDust;
+                    lightningColor = hitColor = redderDust;
                     lifetime = Fx.lightning.lifetime;
                     hitEffect = Fx.hitLancer;
                     despawnEffect = Fx.none;
@@ -1366,7 +1370,7 @@ public class SYBSShenShengUnitTypes {
                 }};
             }};
             var haloProgress = DrawPart.PartProgress.warmup;
-            Color haloColor = Pal.redderDust;
+            Color haloColor = redderDust;
             float haloY = -15f, haloRotSpeed = 1.5f;
 
             var circleProgress = DrawPart.PartProgress.warmup.delay(0.9f);
@@ -1540,7 +1544,7 @@ public class SYBSShenShengUnitTypes {
                                 status = SYBSStatusEffects.duidies.get("paichi").get(0) ;
                                 statusDuration = 300 ;
                                 shootEffect = new MultiEffect(Fx.shootTitan, Fx.colorSparkBig, new WaveEffect(){{
-                                    colorFrom = colorTo = Pal.redderDust;
+                                    colorFrom = colorTo = redderDust;
                                     lifetime = 12f;
                                     sizeTo = 20f;
                                     strokeFrom = 3f;
@@ -1551,14 +1555,14 @@ public class SYBSShenShengUnitTypes {
                                 pierceCap = 40;
                                 pierce = true;
                                 pierceBuilding = true;
-                                hitColor = backColor = trailColor = Pal.redderDust;
+                                hitColor = backColor = trailColor = redderDust;
                                 frontColor = Color.white;
                                 trailWidth = 2.8f;
                                 trailLength = 9;
                                 hitEffect = Fx.hitBulletColor;
                                 despawnEffect = new MultiEffect(Fx.hitBulletColor, new WaveEffect(){{
                                     sizeTo = 30f;
-                                    colorFrom = colorTo = Pal.redderDust;
+                                    colorFrom = colorTo = redderDust;
                                     lifetime = 12f;
                                 }});
 
@@ -1573,7 +1577,7 @@ public class SYBSShenShengUnitTypes {
                                     buildingDamageMultiplier = 1.5f ;
                                     collidesAir = false;
                                     ammoMultiplier = 1f;
-                                    lightningColor = Pal.redderDust;
+                                    lightningColor = redderDust;
                                     lightningLength = 5;
                                     lightningLengthRand = 10;
                                     lightningType = new BulletType(0.0001f, 550f){{
@@ -1742,7 +1746,7 @@ public class SYBSShenShengUnitTypes {
                     }
                     {
                         var haloProgress = DrawPart.PartProgress.warmup;
-                        Color haloColor = Pal.redderDust;
+                        Color haloColor = redderDust;
                         float haloY = -15f, haloRotSpeed = 1.5f;
 
                         var circleProgress = DrawPart.PartProgress.warmup.delay(0.9f);
@@ -1812,10 +1816,10 @@ public class SYBSShenShengUnitTypes {
                 ammoMultiplier = 1f;
                 status = StatusEffects.shocked;
                 statusDuration = 300f;
-                colors[0] = Pal.redderDust.cpy().mul(1f, 1f, 1f, 0.4f) ;
-                colors[1] = Pal.redderDust ;
+                colors[0] = redderDust.cpy().mul(1f, 1f, 1f, 0.4f) ;
+                colors[1] = redderDust ;
                 lightningType = new BulletType(0.0001f, 2000f){{
-                    lightningColor = hitColor = Pal.redderDust;
+                    lightningColor = hitColor = redderDust;
                     lifetime = Fx.lightning.lifetime;
                     hitEffect = Fx.hitLancer;
                     despawnEffect = Fx.none;
@@ -1827,7 +1831,7 @@ public class SYBSShenShengUnitTypes {
                 }};
             }};
             var haloProgress = DrawPart.PartProgress.warmup;
-            Color haloColor = Pal.redderDust;
+            Color haloColor = redderDust;
             float haloY = -15f, haloRotSpeed = 1.5f;
 
             var circleProgress = DrawPart.PartProgress.warmup.delay(0.9f);
@@ -2004,7 +2008,7 @@ public class SYBSShenShengUnitTypes {
                                 status = SYBSStatusEffects.duidies.get("paichi").get(0) ;
                                 statusDuration = 300 ;
                                 shootEffect = new MultiEffect(Fx.shootTitan, Fx.colorSparkBig, new WaveEffect(){{
-                                    colorFrom = colorTo = Pal.redderDust;
+                                    colorFrom = colorTo = redderDust;
                                     lifetime = 12f;
                                     sizeTo = 20f;
                                     strokeFrom = 3f;
@@ -2015,14 +2019,14 @@ public class SYBSShenShengUnitTypes {
                                 pierceCap = 40;
                                 pierce = true;
                                 pierceBuilding = true;
-                                hitColor = backColor = trailColor = Pal.redderDust;
+                                hitColor = backColor = trailColor = redderDust;
                                 frontColor = Color.white;
                                 trailWidth = 2.8f;
                                 trailLength = 9;
                                 hitEffect = Fx.hitBulletColor;
                                 despawnEffect = new MultiEffect(Fx.hitBulletColor, new WaveEffect(){{
                                     sizeTo = 30f;
-                                    colorFrom = colorTo = Pal.redderDust;
+                                    colorFrom = colorTo = redderDust;
                                     lifetime = 12f;
                                 }});
 
@@ -2037,7 +2041,7 @@ public class SYBSShenShengUnitTypes {
                                     buildingDamageMultiplier = 1.5f ;
                                     collidesAir = false;
                                     ammoMultiplier = 1f;
-                                    lightningColor = Pal.redderDust;
+                                    lightningColor = redderDust;
                                     lightningLength = 5;
                                     lightningLengthRand = 10;
                                     lightningType = new BulletType(0.0001f, 550f){{
@@ -2201,7 +2205,7 @@ public class SYBSShenShengUnitTypes {
             }
             {
                 var haloProgress = DrawPart.PartProgress.warmup;
-                Color haloColor = Pal.redderDust;
+                Color haloColor = redderDust;
                 float haloY = -15f, haloRotSpeed = 1.5f;
 
                 var circleProgress = DrawPart.PartProgress.warmup.delay(0.9f);
@@ -2266,7 +2270,7 @@ public class SYBSShenShengUnitTypes {
                 statusDuration = 10 * toSeconds ;
                 width = 0.25f * tilesize ;
                 height = width * 5 ;
-                lightColor = hitColor = backColor = Pal.redderDust ;
+                lightColor = hitColor = backColor = redderDust ;
                 speed *= 6f ;
                 lifetime *= 2f ;
                 homingPower = 1 ;
@@ -2294,7 +2298,7 @@ public class SYBSShenShengUnitTypes {
                     maxRange = 6f;
                     lifetime = 60f * 5.5f / 2 ;
                     outlineColor = Pal.darkOutline;
-                    engineColor = trailColor = Pal.redderDust;
+                    engineColor = trailColor = redderDust;
                     engineLayer = Layer.effect;
                     engineSize = 3.1f;
                     engineOffset = 10f;
@@ -2318,7 +2322,7 @@ public class SYBSShenShengUnitTypes {
                         shootOnDeath = true;
                         shake = 10f;
                         bullet = new ExplosionBulletType(700f, 65f){{
-                            hitColor = Pal.redderDust;
+                            hitColor = redderDust;
                             shootEffect = new MultiEffect(Fx.massiveExplosion, Fx.scatheExplosion, Fx.scatheLight, new WaveEffect(){{
                                 lifetime = 10f;
                                 strokeFrom = 4f;
@@ -2342,12 +2346,12 @@ public class SYBSShenShengUnitTypes {
                                 collidesTiles = false;
                                 splashDamageRadius = 40f;
                                 splashDamage = 80f;
-                                backColor = trailColor = hitColor = Pal.redderDust;
+                                backColor = trailColor = hitColor = redderDust;
                                 frontColor = Color.white;
                                 smokeEffect = Fx.shootBigSmoke2;
                                 despawnShake = 7f;
                                 lightRadius = 30f;
-                                lightColor = Pal.redderDust;
+                                lightColor = redderDust;
                                 lightOpacity = 0.5f;
 
                                 trailLength = 20;
@@ -2366,7 +2370,7 @@ public class SYBSShenShengUnitTypes {
                         //effect = SYBSFx.fixedMissileTrailSmoke;
                         rotation = 180f;
                         y = -9f;
-                        color = Color.grays(0.6f).lerp(Pal.redderDust, 0.5f).a(0.4f);
+                        color = Color.grays(0.6f).lerp(redderDust, 0.5f).a(0.4f);
                         interval = 7f / 2 ;
                     }});
                 }};
@@ -2374,7 +2378,7 @@ public class SYBSShenShengUnitTypes {
             BulletType b = new PointBulletType() {{
                 shootEffect = Fx.shootBig;
                 smokeEffect = Fx.shootSmokeMissile;
-                hitEffect = new MultiEffect(new WrapEffect(SYBSFx.fixedMassiveExplosion, Pal.redLight, 0), new WrapEffect(Fx.dynamicSpikes, Pal.redderDust, 24f), new WaveEffect(){{
+                hitEffect = new MultiEffect(new WrapEffect(SYBSFx.fixedMassiveExplosion, Pal.redLight, 0), new WrapEffect(Fx.dynamicSpikes, redderDust, 24f), new WaveEffect(){{
                     colorFrom = colorTo = Pal.redLight;
                     sizeTo = 40f;
                     lifetime = 12f;
@@ -2397,6 +2401,147 @@ public class SYBSShenShengUnitTypes {
             baseRotation = -90 ;
             shootCone = 360 ;
         }};
+        Weapon shougehongzha = new Weapon("shouge-fupao") {{
+            x = y = 0 ;
+            mirror = false ;
+            shootSound = Sounds.missileLarge ;
+            shootCone = 360 ;
+            //inaccuracy = 360 ;
+            reload = 600 / 2f / 1.25f * 4 ;
+            rotate = true ;
+            bullet = new PointBulletType() {{
+                rangeOverride = 120 * tilesize ;
+                shootEffect = Fx.shootBig;
+                smokeEffect = Fx.shootSmokeMissile;
+                hitColor = chaokongjian2 ;
+                damage = 0 ;
+                speed = 0 ;
+                trailEffect = Fx.none ;
+                lifetime = 1 ;
+                fragBullets = 1 ;
+                fragAngle = 180 ;
+                fragSpread = 0 ;
+                fragRandomSpread = 0 ;
+                fragBullet = new PointBulletType() {{
+                        speed = 120 * tilesize ;
+                        trailEffect = Fx.none ;
+                        lifetime = 1 ;
+                        fragBullets = 1 ;
+                        fragRandomSpread = 0 ;
+                        fragSpread = 0 ;
+                        fragAngle = 180 ;
+                        fragBullet = new BulletType() {
+                            @Override
+                            public void update(Bullet b) {
+                                super.update(b) ;
+                                if (b.timer(2, 20)) {
+                                    Vec2 v = ShaYeBuShi.random(b.x, b.y, 5 * tilesize) ;
+                                    createFrags(b, v.x, v.y) ;
+                                    hitSound.at(b.x, b.y, 1, 2) ;
+                                    hitEffect.at(b.x, b.y, b.rotation(), hitColor) ;
+                                }
+                            }
+                            {
+                                killShooter = false ;
+                                splashDamage = 2000 ;
+                                splashDamageRadius = 20 * tilesize ;
+                                hitSound = Sounds.largeCannon ;
+                                fragBullets = 1 ;
+                                fragVelocityMax = 1.1f ;
+                                fragVelocityMin = 0.9f ;
+                                fragRandomSpread = 0 ;
+                                fragSpread = 0 ;
+                                fragAngle = 0 ;
+                                lifetime = 100 ;
+                                pierce = true ;
+                                fragOnHit = false ;
+                                hitEffect = new MultiEffect(new WrapEffect(SYBSFx.fixedMassiveExplosion, redderDust, 0), new WrapEffect(Fx.dynamicSpikes, yaofeng, 48f), new WaveEffect(){{
+                                    colorFrom = colorTo = redderDust;
+                                    sizeTo = 80f;
+                                    lifetime = 12f;
+                                    strokeFrom = 4f;
+                                }}) ;
+                                fragBullet = new BasicBulletType(30, 450, "missile-large-back") {{
+                                    lifetime = 240 * tilesize / speed ;
+                                    splashDamage = 500 ;
+                                    splashDamageRadius = 16 * tilesize ;
+                                    width = 3 * tilesize ;
+                                    height = width * 3 ;
+                                    frontColor = trailColor = yaofeng ;
+                                    backColor = redderDust ;
+                                    trailEffect = SYBSFx.jiange4 ;
+                                    trailLength = 10 * tilesize ;
+                                    trailWidth = 3 ;
+                                    trailChance = 1 ;
+                                    //pierce = true ;
+                                    homingPower = 1 ;
+                                    //fragOnHit = false ;
+                                    parts.add(new FlarePart(){{
+                                        progress = PartProgress.life.slope().curve(Interp.pow2In);
+                                        radius = 0f;
+                                        radiusTo = 70f;
+                                        stroke = 6f;
+                                        rotation = 45f;
+                                        y = -5f;
+                                        followRotation = true;
+                                        color1 = yaofeng ;
+                                        color2 = redderDust ;
+                                    }});
+                                    hitEffect = new MultiEffect(new WrapEffect(SYBSFx.fixedMassiveExplosion, redderDust, 0), new WrapEffect(Fx.dynamicSpikes, yaofeng, 24f), new WaveEffect(){{
+                                        colorFrom = colorTo = redderDust;
+                                        sizeTo = 40f;
+                                        lifetime = 12f;
+                                        strokeFrom = 4f;
+                                    }}); ;
+                                    hitShake = 15 ;
+                                    despawnHit = true ;
+                                    fragBullets = 5 ;
+                                    hitSound = Sounds.plasmaboom ;
+                                    fragLifeMin = 0.25f ;
+                                    fragLifeMax = 0.75f ;
+                                    knockback = 15f;
+                                    fragBullet = new BasicBulletType(4, 100, "mine-bullet-back") {{
+                                        splashDamage = 150 ;
+                                        splashDamageRadius = 16 / 2.5f * tilesize ;
+                                        hitSound = Sounds.plasmaboom ;
+                                        hitShake = 12 ;
+                                        knockback = 12f;
+                                        frontColor = backColor = hitColor = yaofeng ;
+                                        hitEffect = new MultiEffect(new WrapEffect(SYBSFx.fixedMassiveExplosion, redderDust, 0), Fx.scatheExplosion, Fx.scatheLight, new WaveEffect(){{
+                                            lifetime = 10f;
+                                            strokeFrom = 4f;
+                                            sizeTo = 130f;
+                                        }});
+                                        fragLifeMin = 0.1f;
+                                        fragBullets = 7;
+                                        fragBullet = new ArtilleryBulletType(3.4f, 160){{
+                                            drag = 0.02f;
+                                            hitEffect = SYBSFx.fixedMassiveExplosion;
+                                            despawnEffect = Fx.scatheSlash;
+                                            knockback = 8f;
+                                            lifetime = 23f;
+                                            width = height = 18f;
+                                            collidesTiles = false;
+                                            splashDamageRadius = 40f;
+                                            splashDamage = 250f;
+                                            backColor = trailColor = hitColor = yaofeng;
+                                            frontColor = Color.white;
+                                            smokeEffect = SYBSFx.fixedShootBigSmoke2;
+                                            despawnShake = 8f;
+                                            lightRadius = 30f;
+                                            lightColor = yaofeng;
+                                            lightOpacity = 0.5f;
+
+                                            trailLength = 20;
+                                            trailWidth = 3.5f;
+                                            trailEffect = Fx.none;
+                                        }};
+                                    }} ;
+                                }} ;
+                            }} ;
+                    }} ;
+            }} ;
+        }} ;
         shougejieti = new JieTiUnitType("shougejieti") {
             @Override
             public void load() {
@@ -2418,7 +2563,7 @@ public class SYBSShenShengUnitTypes {
                 hidden = true ;
                 hoverable = false ;
                 isEnemy = false ;
-                weapons.add(shougejiguang, shougefantan, shougedaodan) ;
+                weapons.add(shougejiguang, shougefantan, shougehongzha) ;
             }};
         shouge = new DuoJieTiUnitType("shouge") {
             @Override
@@ -2429,8 +2574,8 @@ public class SYBSShenShengUnitTypes {
             {
                 health = 1650000 ;
                 armor = 150 ;
-                dancixianshang = 4000 ;
-                miaoxianshang = 40000 ;
+                dancixianshang = 2500 ;
+                miaoxianshang = 25000 ;
                 //fenxianshang = 1000000 ;
                 hitSize = 4 * tilesize ;
                 speed = 5 ;
@@ -2440,7 +2585,7 @@ public class SYBSShenShengUnitTypes {
                 circleTarget = true ;
                 aiController = DuoJieTiAI::new;
                 //outlines = false ;
-                weapons.add(shougejiguang, shougefantan, shougedaodan) ;
+                weapons.add(shougejiguang, shougefantan, shougehongzha) ;
                 weapons.add(new Weapon("shouge-zhupao"){{
                     x = 0 ;
                     y = 0 ;
