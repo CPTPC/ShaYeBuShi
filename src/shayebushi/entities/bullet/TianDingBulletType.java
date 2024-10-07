@@ -22,16 +22,19 @@ import java.util.Objects;
 
 import static mindustry.Vars.*;
 
-public class TianDingBulletType extends BasicBulletType {
+public class TianDingBulletType extends BaiFenBiBulletType {
     public int status = 0 ;
     public Block block ;
     public UnitType unit ;
     public int blockId, unitId ;
     public float len, wid ;
+    public float multiplier = 1 ;
+    public Color color ;
+    public boolean drawItem = true ;
     @Override
     public void init() {
         super.init();
-        trailLength = (int)(len / tilesize) ;
+        trailLength = (int)(len / tilesize * multiplier) ;
         trailWidth = width / 2 ;
         lifetime = (len * 2 + wid) / speed ;
         pierce = true ;
@@ -47,11 +50,14 @@ public class TianDingBulletType extends BasicBulletType {
     public @Nullable
     Bullet create(@Nullable Entityc owner, @Nullable Entityc shooter, Team team, float x, float y, float angle, float damage, float velocityScl, float lifetimeScl, Object data, @Nullable Mover mover, float aimX, float aimY){
         Bullet b = super.create(owner, shooter, team, x, y, angle, damage, velocityScl, lifetimeScl, data, mover, aimX, aimY) ;
-        if (status == 0 && block != null) {
+        if (status == 0 && block != null && block.requirements != null && block.requirements.length > 0) {
             b.data = new Data(Objects.requireNonNull(ShaYeBuShi.random(ShaYeBuShi.r, block.requirements)).item, len + ShaYeBuShi.r.random(-5 * tilesize, 5 * tilesize), wid + ShaYeBuShi.r.random(-2.5f * tilesize, 2.5f * tilesize));
         }
-        else if (status == 1 && unit != null) {
+        else if (status == 1 && unit != null && unit.getFirstRequirements() != null && unit.getFirstRequirements().length > 0) {
             b.data = new Data(Objects.requireNonNull(ShaYeBuShi.random(ShaYeBuShi.r, unit.getFirstRequirements())).item, len + ShaYeBuShi.r.random(-5 * tilesize, 5 * tilesize), wid + ShaYeBuShi.r.random(-2.5f * tilesize, 2.5f * tilesize));
+        }
+        if (b.data == null) {
+            b.data = new Data(null, len + ShaYeBuShi.r.random(-5 * tilesize, 5 * tilesize), wid + ShaYeBuShi.r.random(-2.5f * tilesize, 2.5f * tilesize)) ;
         }
         if (b.data instanceof Data d) {
             b.lifetime = d.lifetime ;
@@ -87,7 +93,9 @@ public class TianDingBulletType extends BasicBulletType {
         float height = this.height * ((1f - shrinkY) + shrinkY * shrink);
         float width = this.width * ((1f - shrinkX) + shrinkX * shrink);
         float offset = -90 + (spin != 0 ? Mathf.randomSeed(b.id, 360f) + b.time * spin : 0f) + rotationOffset;
-        Draw.rect(d.i.uiIcon, b.x, b.y, width, height, b.rotation() + offset);
+        if (drawItem) {
+            Draw.rect(d.i.uiIcon, b.x, b.y, width, height, b.rotation() + offset);
+        }
     }
     @Override
     public void drawTrail(Bullet b) {
@@ -96,7 +104,7 @@ public class TianDingBulletType extends BasicBulletType {
             //draw below bullets? TODO
             float z = Draw.z();
             Draw.z(z - 0.0001f);
-            b.trail.draw(d.i.color, trailWidth);
+            b.trail.draw(color == null ? d.i.color : color, trailWidth);
             Draw.z(z);
         }
     }
