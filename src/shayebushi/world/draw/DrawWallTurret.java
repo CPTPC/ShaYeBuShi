@@ -132,6 +132,6 @@ public class DrawWallTurret extends DrawTurret {
     /** @return the generated icons to be used for this block. */
     @Override
     public TextureRegion[] icons(Block block){
-        return top.found() ? new TextureRegion[]{base, preview, top} : new TextureRegion[]{base, preview};
+        return new TextureRegion[]{block.region};
     }
 }
