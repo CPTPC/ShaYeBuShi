@@ -41,6 +41,7 @@ import static arc.graphics.g2d.Lines.*;
 import static arc.math.Angles.randLenVectors;
 import static mindustry.Vars.*;
 import static mindustry.content.Fx.rand;
+import static mindustry.graphics.Pal.redderDust;
 import static shayebushi.SYBSPal.*;
 
 
@@ -50,7 +51,7 @@ public class SYBSFx {
             Draw.z(Layer.bullet + 0.1f) ;
 //            Draw.color(Color.valueOf("000000ff"));
 //            Fill.circle(e.x,e.y,40);
-            Draw.color(Pal.redderDust);
+            Draw.color(redderDust);
             int angle = 0 ;
             Rand r = new Rand() ;
             float xo = r.random(8, 24) ;
@@ -65,7 +66,7 @@ public class SYBSFx {
                 Draw.color(Color.white);
                 Drawf.tri(e.x + xo,e.y + yo,80 / e.lifetime * (e.lifetime - e.time),320 / 64f * 80,360f / 15 + angle);
                 Drawf.tri(e.x + xo,e.y + yo,80 / e.lifetime * (e.lifetime - e.time),80,360f / 15 + angle + 180);
-                Draw.color(Pal.redderDust);
+                Draw.color(redderDust);
                 Drawf.tri(e.x + xo,e.y + yo,64 / e.lifetime * (e.lifetime - e.time),320,360f / 15 + angle);
                 Drawf.tri(e.x + xo,e.y + yo,64 / e.lifetime * (e.lifetime - e.time),64,360f / 15 + angle + 180);
                 angle += 360f / 15 ;
@@ -76,7 +77,7 @@ public class SYBSFx {
         new MultiEffect(Fx.bigShockwave, new WrapEffect(Fx.titanSmoke, Color.valueOf("e3ae6f")))
     ),
     huan = new Effect(80f, 700f, e -> {
-        color(Pal.redderDust);
+        color(redderDust);
         stroke(e.fin() * 4f);
         Lines.circle(e.x, e.y, 4f + e.fout() * 700f);
 
@@ -84,7 +85,7 @@ public class SYBSFx {
 
         randLenVectors(e.id, 20, 40f * e.fout(), (x, y) -> {
             //Fill.circle(e.x + x, e.y + y, e.fin() * 30f);
-            Drawf.light(e.x + x, e.y + y, e.fin() * 120f, Pal.redderDust, 0.7f);
+            Drawf.light(e.x + x, e.y + y, e.fin() * 120f, redderDust, 0.7f);
         });
 
         color();
@@ -93,13 +94,13 @@ public class SYBSFx {
         Drawf.light(e.x, e.y, e.fin() * 180f, Pal.heal, 0.7f);
     }).followParent(true).rotWithParent(true),
     fanhuan = new Effect(80f, 1000f, e -> {
-        color(Pal.redderDust);
+        color(redderDust);
         stroke(e.fout() * 4f);
         Lines.circle(e.x, e.y, 4f + e.fout() * 2000f);
         Fill.circle(e.x, e.y, e.fout() * 400);
         randLenVectors(e.id, 20, 40f * e.fout(), (x, y) -> {
             Fill.circle(e.x + x, e.y + y, e.fout() * 100f);
-            Drawf.light(e.x + x, e.y + y, e.fout() * 300f, Pal.redderDust, 0.7f);
+            Drawf.light(e.x + x, e.y + y, e.fout() * 300f, redderDust, 0.7f);
         });
         color();
         Fill.circle(e.x, e.y, e.fout() * 200);
@@ -108,7 +109,7 @@ public class SYBSFx {
     jidianxiyin = new MultiEffect(
         new Effect(90,e -> {
             Draw.z(Layer.bullet + 0.1f) ;
-            Draw.color(Pal.redderDust);
+            Draw.color(redderDust);
 //            Lines.stroke(5);
 //            Lines.circle(e.x, e.y, 50 / e.fin());
 //            Lines.circle(e.x, e.y, 60 / e.fin());
@@ -121,7 +122,7 @@ public class SYBSFx {
     jidianshifang = new MultiEffect(
         new Effect(90,e -> {
             Draw.z(Layer.bullet + 0.1f) ;
-            Draw.color(Pal.redderDust);
+            Draw.color(redderDust);
 //            Lines.stroke(5);
 //            Lines.circle(e.x, e.y, 50 * e.fin());
 //            Lines.circle(e.x, e.y, 60 * e.fin());
@@ -563,7 +564,7 @@ public class SYBSFx {
         float baseLifetime = 26f + intensity * 15f;
         b.lifetime = 43f + intensity * 35f;
 
-        color(Pal.heal, Pal.redderDust, Pal.accent, b.fin());
+        color(Pal.heal, redderDust, Pal.accent, b.fin());
         //TODO awful borders with linear filtering here
         alpha(0.9f);
         for(int i = 0; i < 4; i++){
@@ -612,7 +613,7 @@ public class SYBSFx {
         line(tr, u.x + ox, u.y + oy, u.x + ox, u.y + oy, false);
     }), jiange2 = new Effect(30, e -> {
         for(int i = 0; i < 2; i++){
-            color(i == 0 ? Pal.redderDust : Pal.redLight);
+            color(i == 0 ? redderDust : Pal.redLight);
 
             float m = i == 0 ? 1f : 0.5f;
 
@@ -622,7 +623,7 @@ public class SYBSFx {
             Drawf.tri(e.x, e.y, w, 10f * m, rot + 90f);
         }
 
-        Drawf.light(e.x, e.y, 60f, Pal.redderDust, 0.6f * e.fout());
+        Drawf.light(e.x, e.y, 60f, redderDust, 0.6f * e.fout());
     }), fixedShieldBreak = new Effect(40, e -> {
         color(e.color);
         stroke(3f * e.fout());
@@ -954,5 +955,18 @@ public class SYBSFx {
                     });
                 });
             }
-        }).layer(Layer.bullet - 1f);
+        }).layer(Layer.bullet - 1f), jiange4 = new Effect(30, e -> {
+        for(int i = 0; i < 2; i++){
+            color(i == 0 ? redderDust : yaofeng);
+
+            float m = i == 0 ? 1f : 0.5f;
+
+            float rot = e.rotation + 180f - 45f;
+            float w = 15f * e.fout() * m;
+            Drawf.tri(e.x, e.y, w, (30f + Mathf.randomSeedRange(e.id, 15f)) * m, rot);
+            Drawf.tri(e.x, e.y, w, 10f * m, rot + 90f);
+        }
+
+        Drawf.light(e.x, e.y, 60f, yaofeng, 0.6f * e.fout());
+    });
 }
