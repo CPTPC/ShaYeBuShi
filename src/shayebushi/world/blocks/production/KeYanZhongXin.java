@@ -57,11 +57,6 @@ public class KeYanZhongXin extends Block{
     }
 
     @Override
-    protected TextureRegion[] icons(){
-        return new TextureRegion[]{Core.atlas.find("source-bottom"), region};
-    }
-
-    @Override
     public boolean outputsItems(){
         return true;
     }
